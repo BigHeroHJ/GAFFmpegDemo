@@ -7,16 +7,26 @@
 //
 
 #import "ViewController.h"
+#import "GACodec.h"
+#import "CodeDecoder.h"
 
 @interface ViewController ()
-
+{
+    CodeDecoder   *coDec;
+    UIImageView  *imageV;
+}
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    
+//     GACodec  *codec1 = [[GACodec alloc] initWithVideo:@"/Users/xds/Desktop/曹高安项目/GAFFmpegDemo/GAFFmpegDemo/只发精品！买完整版加微信zgkwdj -Chinese homemade vid.mp4"];
+    coDec = [[CodeDecoder alloc] init];
+    [coDec openWithPath:[[NSBundle  mainBundle] pathForResource:@"11" ofType:@"MP4"]];
+    
+    [coDec decodecFrame];
 }
 
 
