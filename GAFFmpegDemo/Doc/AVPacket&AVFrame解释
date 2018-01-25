@@ -1,0 +1,53 @@
+AVPacket: 存储解码前数据(编码数据:H264/AAC等)
+AVFrame: 存储解码后数据(像素数据:YUV/RGB/PCM等)
+
+1  ---AVPacket ：
+FFMPEG使用AVPacket来暂存解复用之后、解码之前的媒体数据（一个音/视频帧、一个字幕包等）及附加信息（解码时间戳、显示时间戳、时长等）。其中：
+
+dts表示解码时间戳，pts表示显示时间戳，它们的单位是所属媒体流的时间基准。
+stream_index给出所属媒体流的索引；
+data为数据缓冲区指针，size为长度；
+duration为数据的时长，也是以所属媒体流的时间基准为单位；
+pos表示该数据在媒体流中的字节偏移量；
+destruct为用于释放数据缓冲区的函数指针；
+flags为标志域，其中，最低为置1表示该数据是一个关键帧。
+AVPacket结构本身只是个容器，它使用data成员引用实际的数据缓冲区。这个缓冲区通常是由av_new_packet创建的，但也可能由 FFMPEG的API创建（如av_read_frame）。当某个AVPacket结构的数据缓冲区不再被使用时，要需要通过调用 av_free_packet释放。av_free_packet调用的是结构体本身的destruct函数，它的值有两种情 况：1)av_destruct_packet_nofree或0；2)av_destruct_packet，其中，情况1)仅仅是将data和 size的值清0而已，情况2)才会真正地释放缓冲区。
+
+FFMPEG内部使用AVPacket结构建立缓冲区装载数据，同时提供destruct函数，如果FFMPEG打算自己维护缓冲区，则将 destruct设为av_destruct_packet_nofree，用户调用av_free_packet清理缓冲区时并不能够将其释放；如果 FFMPEG打算将该缓冲区彻底交给调用者，则将destruct设为av_destruct_packet，表示它能够被释放。安全起见，如果用户希望 自由地使用一个FFMPEG内部创建的AVPacket结构，最好调用av_dup_packet进行缓冲区的克隆，将其转化为缓冲区能够被释放的 AVPacket，以免对缓冲区的不当占用造成异常错误。av_dup_packet会为destruct指针为 av_destruct_packet_nofree的AVPacket新建一个缓冲区，然后将原缓冲区的数据拷贝至新缓冲区，置data的值为新缓冲区 的地址，同时设destruct指针为av_destruct_packet。
+
+
+每一个包是一个完整的数据帧,来暂存解复用之后、解码之前的媒体数据（一个音/视频帧、一个字幕包等）及附加信息（解码时间戳、显示时间戳、时长等）
+
+//注意保存音视频数据包的内存
+
+是 malloc 出来的,用完后应及时用 free 归还给系统
+
+
+2 ————AVFrame:
+
+
+typedef struct AVPicture {
+
+uint8_t *data[4];
+
+int linesize[4];       ///< number of bytes per line
+
+} AVPicture;
+
+
+
+typedef struct AVFrame
+
+{
+
+uint8_t *data[4]; // 有多重意义，其一用NULL 来判断是否被占用
+
+int linesize[4];
+
+uint8_t *base[4]; // 有多重意义，其一用NULL 来判断是否分配内存
+
+//......其他的数据
+
+} AVFrame;
+
+从定义上可知，AVPicture是AVFrame的一个子集，他们都是数据流在编解过程中用来保存数据缓存的对像，从int av_read_frame(AVFormatContext *s, AVPacket *pkt)函数看，从数据流读出的数据首先是保存在AVPacket里，也可以理解为一个AVPacket最多只包含一个AVFrame，而一个AVFrame可能包含好几个AVPacket，AVPacket是种数据流分包的概念。

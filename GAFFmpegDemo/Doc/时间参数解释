@@ -1,0 +1,36 @@
+AVRatioal的定义如下：
+
+typedef struct AVRational{
+int num; //numerator
+int den; //denominator
+} AVRational;
+ffmpeg提供了一个把AVRatioal结构转换成double的函数：
+
+复制代码
+static inline double av_q2d(AVRational a)｛
+/**
+* Convert rational to double.
+* @param a rational to convert
+**/
+return a.num / (double) a.den;
+}
+复制代码
+现在可以根据pts来计算一桢在整个视频中的时间位置：
+
+timestamp(秒) = pts * av_q2d(st->time_base)
+
+计算视频长度的方法：
+
+time(秒) = st->duration * av_q2d(st->time_base)
+
+这里的st是一个AVStream对象指针。
+时间基转换公式
+timestamp(ffmpeg内部时间戳) = AV_TIME_BASE * time(秒)
+time(秒) = AV_TIME_BASE_Q * timestamp(ffmpeg内部时间戳)
+所以当需要把视频跳转到N秒的时候可以使用下面的方法：
+int64_t timestamp = N * AV_TIME_BASE;
+2
+av_seek_frame(fmtctx, index_of_video, timestamp, AVSEEK_FLAG_BACKWARD);
+ffmpeg同样为我们提供了不同时间基之间的转换函数：
+int64_t av_rescale_q(int64_t a, AVRational bq, AVRational cq)
+这个函数的作用是计算a * bq / cq，来把时间戳从一个时基调整到另外一个时基。在进行时基转换的时候，我们应该首选这个函数，因为它可以避免溢出的情况发生。</span>

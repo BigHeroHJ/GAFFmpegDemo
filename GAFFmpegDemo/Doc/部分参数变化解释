@@ -1,0 +1,126 @@
+ffmpeg源码包里面有个apichangs文档，里面有各种接口改变的记录，如果你发现接口不能用了，可以去搜索那个文档，可以找到对应的新接口，然后到新接口对应的头文件中找到说明文字
+
+
+
+网上很多关于ffmpeg (libav)的资料都是N年以前的，而事实上ffmpeg数年来一直在“以时俱进”，因此无论是一些新手，或者号称为老手的人，有时候难免出头痛。。。。。。
+
+
+为了解决大家的头痛的问题，特列一个贴子，把ffmpeg相关的一些常见的、版本的问题列举出来，供大家参考，同时也请大家一起补充。
+
+1) 不认识guess_format.
+解决：  #define guess_format  av_guess_format
+接口不变。
+
+2) 不认识av_alloc_format_context
+解决：  #define   av_alloc_format_context  avformat_alloc_output_context
+接口调整。
+
+3) 不认识CODEC_TYPE_VIDEO 和 CODEC_TYPE_AUDIO
+解决：
+#define CODEC_TYPE_VIDEO AVMEDIA_TYPE_VIDEO
+#define CODEC_TYPE_AUDIO AVMEDIA_TYPE_AUDIO
+
+4) 不认识audio_resample_init
+解决：#define audio_resample_init av_audio_resample_init
+接口调整。
+
+5) avcodec_decode_video 到 avcodec_decode_video2接口调整
+旧代码：
+len = avcodec_decode_video(c, (short *)outbuf, &out_size, inbuf_ptr, size);
+复制代码
+新代码：
+av_init_packet(&pkt);
+pkt.data = (unsigned char*)inbuf_ptr;
+pkt.size = size;
+len = avcodec_decode_video2(c, &tmpFrame, &got_picture, &pkt);
+复制代码
+
+av_open_input_file
+/opt/workspace/android/EasyPlayer/jni/EasyPlayer/EasyPlayer.cpp:483: warning: 'int av_open_input_file(AVFormatContext**, const char*, AVInputFormat*, int, AVFormatParameters*)' is deprecated (declared at /opt/workspace/android/EasyPlayer/jni/EasyPlayer/../include/libavformat/avformat.h:1480)
+新接口：
+#ifdef _FFMPEG_0_6__
+if(av_open_input_file(&ffmpeg_fields.pFormatCtx, _filePath, NULL, 0, NULL) != 0)
+#else
+if (avformat_open_input(&ffmpeg_fields.pFormatCtx, _filePath, NULL, NULL) != 0)
+#endif
+
+复制代码
+av_find_stream_info
+/opt/workspace/android/EasyPlayer/jni/EasyPlayer/EasyPlayer.cpp:494: warning: 'int av_find_stream_info(AVFormatContext*)' is deprecated (declared at /opt/workspace/android/EasyPlayer/jni/EasyPlayer/../include/libavformat/avformat.h:1526)
+新接口：
+#ifdef _FFMPEG_0_6__
+if(av_find_stream_info(ffmpeg_fields.pFormatCtx) < 0)
+#else
+if (avformat_find_stream_info(ffmpeg_fields.pFormatCtx, NULL) < 0)
+#endif
+复制代码
+av_close_input_file
+
+/opt/workspace/android/EasyPlayer/jni/EasyPlayer/EasyPlayer.cpp:522: warning: 'void av_close_input_file(AVFormatContext*)' is deprecated (declared at /opt/workspace/android/EasyPlayer/jni/EasyPlayer/../include/libavformat/avformat.h:1706)
+
+新接口：
+#ifdef _FFMPEG_0_6__
+av_close_input_file(ffmpeg_fields.pFormatCtx);
+#else
+avformat_close_input(&ffmpeg_fields.pFormatCtx);
+#endif
+
+复制代码
+注意，这个是个２级指针。
+
+avcodec_open2
+新出来的avcodec_open2接口支持一些编解码特性的指定。
+#ifdef __FFMPEG_0_6__
+if (avcodec_open(ffmpeg_video.codec_ctx, ffmpeg_video.codec) < 0)
+#else
+if (avcodec_open2(ffmpeg_video.codec_ctx, ffmpeg_video.codec, NULL) < 0)
+#endif
+
+avcodec_init
+
+/opt/workspace/android/EasyIPCam/jni/libeasycodec/EasyCodec.cpp:20: warning: 'void avcodec_init()' is deprecated (declared at /opt/workspace/android/EasyIPCam/jni/libeasycodec/../3rdparty/libavcodec/avcodec.h:3932)
+
+这个function已经不再需要了，当你调用avcodec_register()或者 avcodec_register_all()时，ffmpeg会自动调用它。所以放心大胆的移除掉就可以了。
+
+url_fclose url_fopen url_fseek等等
+
+/opt/workspace/android/EasyIPCam/jni/libeasycodec/EasyCodec.cpp:67: warning: 'int url_fclose(AVIOContext*)' is deprecated (declared at /opt/workspace/android/EasyIPCam/jni/libeasycodec/../3rdparty/libavformat/avio.h:324)
+这一系统的接口都只需要在前面加一个avio_的前缀就可以了，如：avio_close()。
+
+avcodec_alloc_context()
+
+/opt/workspace/android/EasyIPCam/jni/libeasycodec/EasyCodec.cpp:111: warning: 'AVCodecContext* avcodec_alloc_context()' is deprecated (declared at /opt/workspace/android/EasyIPCam/jni/libeasycodec/../3rdparty/libavcodec/avcodec.h:4025)
+
+使用最新接口：avcodec_alloc_context3()
+m_pACodec = avcodec_find_encoder((CodecID)nCodecID);
+if(!m_pACodec) return false;
+m_pAContext                    = avcodec_alloc_context3(m_pACodec);
+
+
+复制代码
+av_get_bits_per_sample_format
+
+/opt/workspace/android/EasyIPCam/jni/libeasycodec/EasyCodec.cpp:143: warning: 'int av_get_bits_per_sample_format(AVSampleFormat)' is deprecated (declared at /opt/workspace/android/EasyIPCam/jni/libeasycodec/../3rdparty/libavcodec/avcodec.h:4529)
+新接口改为av_get_bytes_per_sample（反正音频bits per sample是8的倍数，不是8就是16，直接用byte比用bit更好）
+
+audio_resample_init
+
+/opt/workspace/android/EasyIPCam/jni/libeasycodec/EasyCodec.cpp:157: error: 'audio_resample_init' was not declared in this scope
+新接口：av_audio_resample_init，原先我以为ffmpeg要支持超过2 channels的resample，后来一看resample.c里的实现，结果发现还是只能支持mono和stereo
+多出来的几个参数，给填default值:
+AV_SAMPLE_FMT_S16,
+AV_SAMPLE_FMT_S16,
+TAPS, 10, 0, 0.8
+
+复制代码
+详见resample.c，或者参考RTSPPlayer中的easyffmpeg.cpp.
+
+PKT_FLAG_KEY
+没什么好说的，直接在前面加个AV_的前缀：AV_PKT_FLAG_KEY
+
+av_alloc_format_context
+
+/opt/workspace/android/EasyIPCam/jni/libeasycodec/EasyCodec.cpp:722: error: 'av_alloc_format_context' was not declared in this scope
+这个前面两位同仁有提到不同，但不说怎么个不同法，实在可恨，我直接写个例子：
+avformat_alloc_output_context2(&m_pFormatCtx, pOutputFmt, "avi", pFileName);
+复制代码
