@@ -35,6 +35,7 @@
 		3FA39D34201A2A05000F9EBE /* AVPacket&AVFrame解释 in Resources */ = {isa = PBXBuildFile; fileRef = 3FA39D31201A2A04000F9EBE /* AVPacket&AVFrame解释 */; };
 		3FA39D35201A2A05000F9EBE /* 部分参数变化解释 in Resources */ = {isa = PBXBuildFile; fileRef = 3FA39D32201A2A05000F9EBE /* 部分参数变化解释 */; };
 		3FA39D36201A2A05000F9EBE /* 时间参数解释 in Resources */ = {isa = PBXBuildFile; fileRef = 3FA39D33201A2A05000F9EBE /* 时间参数解释 */; };
+		3FA39D39201A2D9F000F9EBE /* CG_Frame_YUV.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FA39D37201A2D9F000F9EBE /* CG_Frame_YUV.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -190,6 +191,8 @@
 		3FA39D31201A2A04000F9EBE /* AVPacket&AVFrame解释 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "AVPacket&AVFrame解释"; sourceTree = "<group>"; };
 		3FA39D32201A2A05000F9EBE /* 部分参数变化解释 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "部分参数变化解释"; sourceTree = "<group>"; };
 		3FA39D33201A2A05000F9EBE /* 时间参数解释 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "时间参数解释"; sourceTree = "<group>"; };
+		3FA39D37201A2D9F000F9EBE /* CG_Frame_YUV.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CG_Frame_YUV.m; sourceTree = "<group>"; };
+		3FA39D38201A2D9F000F9EBE /* CG_Frame_YUV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CG_Frame_YUV.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -266,6 +269,8 @@
 				3FA39D28201A28AF000F9EBE /* GACodec.m */,
 				3FA39D2E201A295F000F9EBE /* CodeDecoder.h */,
 				3FA39D2D201A295F000F9EBE /* CodeDecoder.m */,
+				3FA39D38201A2D9F000F9EBE /* CG_Frame_YUV.h */,
+				3FA39D37201A2D9F000F9EBE /* CG_Frame_YUV.m */,
 				3FA39C72201A2757000F9EBE /* Main.storyboard */,
 				3FA39C75201A2757000F9EBE /* Assets.xcassets */,
 				3FA39C77201A2757000F9EBE /* LaunchScreen.storyboard */,
@@ -639,6 +644,7 @@
 			files = (
 				3FA39C71201A2757000F9EBE /* ViewController.m in Sources */,
 				3FA39C7C201A2757000F9EBE /* main.m in Sources */,
+				3FA39D39201A2D9F000F9EBE /* CG_Frame_YUV.m in Sources */,
 				3FA39D2A201A28AF000F9EBE /* GACodec.m in Sources */,
 				3FA39C6E201A2757000F9EBE /* AppDelegate.m in Sources */,
 				3FA39D2F201A2960000F9EBE /* CodeDecoder.m in Sources */,
