@@ -1,0 +1,551 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3FA39C6E201A2757000F9EBE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FA39C6D201A2757000F9EBE /* AppDelegate.m */; };
+		3FA39C71201A2757000F9EBE /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FA39C70201A2757000F9EBE /* ViewController.m */; };
+		3FA39C74201A2757000F9EBE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3FA39C72201A2757000F9EBE /* Main.storyboard */; };
+		3FA39C76201A2757000F9EBE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3FA39C75201A2757000F9EBE /* Assets.xcassets */; };
+		3FA39C79201A2757000F9EBE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3FA39C77201A2757000F9EBE /* LaunchScreen.storyboard */; };
+		3FA39C7C201A2757000F9EBE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FA39C7B201A2757000F9EBE /* main.m */; };
+		3FA39C86201A2757000F9EBE /* GAFFmpegDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FA39C85201A2757000F9EBE /* GAFFmpegDemoTests.m */; };
+		3FA39C91201A2757000F9EBE /* GAFFmpegDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FA39C90201A2757000F9EBE /* GAFFmpegDemoUITests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3FA39C82201A2757000F9EBE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3FA39C61201A2757000F9EBE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3FA39C68201A2757000F9EBE;
+			remoteInfo = GAFFmpegDemo;
+		};
+		3FA39C8D201A2757000F9EBE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3FA39C61201A2757000F9EBE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3FA39C68201A2757000F9EBE;
+			remoteInfo = GAFFmpegDemo;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		3FA39C69201A2757000F9EBE /* GAFFmpegDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GAFFmpegDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3FA39C6C201A2757000F9EBE /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		3FA39C6D201A2757000F9EBE /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		3FA39C6F201A2757000F9EBE /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		3FA39C70201A2757000F9EBE /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		3FA39C73201A2757000F9EBE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		3FA39C75201A2757000F9EBE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3FA39C78201A2757000F9EBE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		3FA39C7A201A2757000F9EBE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3FA39C7B201A2757000F9EBE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		3FA39C81201A2757000F9EBE /* GAFFmpegDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GAFFmpegDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3FA39C85201A2757000F9EBE /* GAFFmpegDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GAFFmpegDemoTests.m; sourceTree = "<group>"; };
+		3FA39C87201A2757000F9EBE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3FA39C8C201A2757000F9EBE /* GAFFmpegDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GAFFmpegDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3FA39C90201A2757000F9EBE /* GAFFmpegDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GAFFmpegDemoUITests.m; sourceTree = "<group>"; };
+		3FA39C92201A2757000F9EBE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3FA39C66201A2757000F9EBE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3FA39C7E201A2757000F9EBE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3FA39C89201A2757000F9EBE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3FA39C60201A2757000F9EBE = {
+			isa = PBXGroup;
+			children = (
+				3FA39C6B201A2757000F9EBE /* GAFFmpegDemo */,
+				3FA39C84201A2757000F9EBE /* GAFFmpegDemoTests */,
+				3FA39C8F201A2757000F9EBE /* GAFFmpegDemoUITests */,
+				3FA39C6A201A2757000F9EBE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3FA39C6A201A2757000F9EBE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3FA39C69201A2757000F9EBE /* GAFFmpegDemo.app */,
+				3FA39C81201A2757000F9EBE /* GAFFmpegDemoTests.xctest */,
+				3FA39C8C201A2757000F9EBE /* GAFFmpegDemoUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3FA39C6B201A2757000F9EBE /* GAFFmpegDemo */ = {
+			isa = PBXGroup;
+			children = (
+				3FA39C6C201A2757000F9EBE /* AppDelegate.h */,
+				3FA39C6D201A2757000F9EBE /* AppDelegate.m */,
+				3FA39C6F201A2757000F9EBE /* ViewController.h */,
+				3FA39C70201A2757000F9EBE /* ViewController.m */,
+				3FA39C72201A2757000F9EBE /* Main.storyboard */,
+				3FA39C75201A2757000F9EBE /* Assets.xcassets */,
+				3FA39C77201A2757000F9EBE /* LaunchScreen.storyboard */,
+				3FA39C7A201A2757000F9EBE /* Info.plist */,
+				3FA39C7B201A2757000F9EBE /* main.m */,
+			);
+			path = GAFFmpegDemo;
+			sourceTree = "<group>";
+		};
+		3FA39C84201A2757000F9EBE /* GAFFmpegDemoTests */ = {
+			isa = PBXGroup;
+			children = (
+				3FA39C85201A2757000F9EBE /* GAFFmpegDemoTests.m */,
+				3FA39C87201A2757000F9EBE /* Info.plist */,
+			);
+			path = GAFFmpegDemoTests;
+			sourceTree = "<group>";
+		};
+		3FA39C8F201A2757000F9EBE /* GAFFmpegDemoUITests */ = {
+			isa = PBXGroup;
+			children = (
+				3FA39C90201A2757000F9EBE /* GAFFmpegDemoUITests.m */,
+				3FA39C92201A2757000F9EBE /* Info.plist */,
+			);
+			path = GAFFmpegDemoUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3FA39C68201A2757000F9EBE /* GAFFmpegDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3FA39C95201A2757000F9EBE /* Build configuration list for PBXNativeTarget "GAFFmpegDemo" */;
+			buildPhases = (
+				3FA39C65201A2757000F9EBE /* Sources */,
+				3FA39C66201A2757000F9EBE /* Frameworks */,
+				3FA39C67201A2757000F9EBE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GAFFmpegDemo;
+			productName = GAFFmpegDemo;
+			productReference = 3FA39C69201A2757000F9EBE /* GAFFmpegDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		3FA39C80201A2757000F9EBE /* GAFFmpegDemoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3FA39C98201A2757000F9EBE /* Build configuration list for PBXNativeTarget "GAFFmpegDemoTests" */;
+			buildPhases = (
+				3FA39C7D201A2757000F9EBE /* Sources */,
+				3FA39C7E201A2757000F9EBE /* Frameworks */,
+				3FA39C7F201A2757000F9EBE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3FA39C83201A2757000F9EBE /* PBXTargetDependency */,
+			);
+			name = GAFFmpegDemoTests;
+			productName = GAFFmpegDemoTests;
+			productReference = 3FA39C81201A2757000F9EBE /* GAFFmpegDemoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		3FA39C8B201A2757000F9EBE /* GAFFmpegDemoUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3FA39C9B201A2757000F9EBE /* Build configuration list for PBXNativeTarget "GAFFmpegDemoUITests" */;
+			buildPhases = (
+				3FA39C88201A2757000F9EBE /* Sources */,
+				3FA39C89201A2757000F9EBE /* Frameworks */,
+				3FA39C8A201A2757000F9EBE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3FA39C8E201A2757000F9EBE /* PBXTargetDependency */,
+			);
+			name = GAFFmpegDemoUITests;
+			productName = GAFFmpegDemoUITests;
+			productReference = 3FA39C8C201A2757000F9EBE /* GAFFmpegDemoUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3FA39C61201A2757000F9EBE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0920;
+				ORGANIZATIONNAME = MountainX;
+				TargetAttributes = {
+					3FA39C68201A2757000F9EBE = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+					3FA39C80201A2757000F9EBE = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 3FA39C68201A2757000F9EBE;
+					};
+					3FA39C8B201A2757000F9EBE = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 3FA39C68201A2757000F9EBE;
+					};
+				};
+			};
+			buildConfigurationList = 3FA39C64201A2757000F9EBE /* Build configuration list for PBXProject "GAFFmpegDemo" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3FA39C60201A2757000F9EBE;
+			productRefGroup = 3FA39C6A201A2757000F9EBE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3FA39C68201A2757000F9EBE /* GAFFmpegDemo */,
+				3FA39C80201A2757000F9EBE /* GAFFmpegDemoTests */,
+				3FA39C8B201A2757000F9EBE /* GAFFmpegDemoUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3FA39C67201A2757000F9EBE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3FA39C79201A2757000F9EBE /* LaunchScreen.storyboard in Resources */,
+				3FA39C76201A2757000F9EBE /* Assets.xcassets in Resources */,
+				3FA39C74201A2757000F9EBE /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3FA39C7F201A2757000F9EBE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3FA39C8A201A2757000F9EBE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3FA39C65201A2757000F9EBE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3FA39C71201A2757000F9EBE /* ViewController.m in Sources */,
+				3FA39C7C201A2757000F9EBE /* main.m in Sources */,
+				3FA39C6E201A2757000F9EBE /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3FA39C7D201A2757000F9EBE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3FA39C86201A2757000F9EBE /* GAFFmpegDemoTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3FA39C88201A2757000F9EBE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3FA39C91201A2757000F9EBE /* GAFFmpegDemoUITests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3FA39C83201A2757000F9EBE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3FA39C68201A2757000F9EBE /* GAFFmpegDemo */;
+			targetProxy = 3FA39C82201A2757000F9EBE /* PBXContainerItemProxy */;
+		};
+		3FA39C8E201A2757000F9EBE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3FA39C68201A2757000F9EBE /* GAFFmpegDemo */;
+			targetProxy = 3FA39C8D201A2757000F9EBE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		3FA39C72201A2757000F9EBE /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3FA39C73201A2757000F9EBE /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		3FA39C77201A2757000F9EBE /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3FA39C78201A2757000F9EBE /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		3FA39C93201A2757000F9EBE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		3FA39C94201A2757000F9EBE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		3FA39C96201A2757000F9EBE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = GAFFmpegDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.MountainX.GAFFmpegDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3FA39C97201A2757000F9EBE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = GAFFmpegDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.MountainX.GAFFmpegDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		3FA39C99201A2757000F9EBE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = GAFFmpegDemoTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.MountainX.GAFFmpegDemoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GAFFmpegDemo.app/GAFFmpegDemo";
+			};
+			name = Debug;
+		};
+		3FA39C9A201A2757000F9EBE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = GAFFmpegDemoTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.MountainX.GAFFmpegDemoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GAFFmpegDemo.app/GAFFmpegDemo";
+			};
+			name = Release;
+		};
+		3FA39C9C201A2757000F9EBE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = GAFFmpegDemoUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.MountainX.GAFFmpegDemoUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = GAFFmpegDemo;
+			};
+			name = Debug;
+		};
+		3FA39C9D201A2757000F9EBE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = GAFFmpegDemoUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.MountainX.GAFFmpegDemoUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = GAFFmpegDemo;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3FA39C64201A2757000F9EBE /* Build configuration list for PBXProject "GAFFmpegDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3FA39C93201A2757000F9EBE /* Debug */,
+				3FA39C94201A2757000F9EBE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3FA39C95201A2757000F9EBE /* Build configuration list for PBXNativeTarget "GAFFmpegDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3FA39C96201A2757000F9EBE /* Debug */,
+				3FA39C97201A2757000F9EBE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3FA39C98201A2757000F9EBE /* Build configuration list for PBXNativeTarget "GAFFmpegDemoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3FA39C99201A2757000F9EBE /* Debug */,
+				3FA39C9A201A2757000F9EBE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3FA39C9B201A2757000F9EBE /* Build configuration list for PBXNativeTarget "GAFFmpegDemoUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3FA39C9C201A2757000F9EBE /* Debug */,
+				3FA39C9D201A2757000F9EBE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3FA39C61201A2757000F9EBE /* Project object */;
+}
