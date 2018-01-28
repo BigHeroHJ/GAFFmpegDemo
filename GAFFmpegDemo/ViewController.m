@@ -12,23 +12,44 @@
 
 @interface ViewController ()
 {
+    GACodec       *gaCodec;
     CodeDecoder   *coDec;
     UIImageView  *imageV;
 }
+@property (weak, nonatomic) IBOutlet UIImageView *playImageView;
 @end
+
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//     GACodec  *codec1 = [[GACodec alloc] initWithVideo:@"/Users/xds/Desktop/曹高安项目/GAFFmpegDemo/GAFFmpegDemo/只发精品！买完整版加微信zgkwdj -Chinese homemade vid.mp4"];
-    coDec = [[CodeDecoder alloc] init];
-    [coDec openWithPath:[[NSBundle  mainBundle] pathForResource:@"11" ofType:@"MP4"]];
-    
-    [coDec decodecFrame];
-}
 
+    GACodec  *codec1 = [[GACodec alloc] initWithVideo:@"//Users/xds/Desktop/视频/英雄时刻_20160103-13点35分09s.avi"];
+    
+    gaCodec = codec1;
+//    coDec = [[CodeDecoder alloc] init];
+//    [coDec openWithPath:@"/Users/xds/Desktop/曹高安项目/GAFFmpegDemo/11.mp4"];
+
+    
+    [NSTimer scheduledTimerWithTimeInterval: 1 / 30.0f
+                                     target:self
+                                   selector:@selector(displayNextFrame:)
+                                   userInfo:nil
+                                    repeats:YES];
+    //[coDec decodecFrame];
+}
+- (void)displayNextFrame:(NSTimer *)timer
+{
+    if(![gaCodec nextFrame]){
+        return;
+    }
+   
+    //获取 avframe 中数据转化为image】
+   // UIImage *img = [gaCodec imageFromAVPicture];
+     _playImageView.image = gaCodec.currentImage;
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

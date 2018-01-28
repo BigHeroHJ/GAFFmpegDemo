@@ -7,7 +7,6 @@
 //
 
 #import "GACodec.h"
-
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libswscale//swscale.h>
@@ -18,6 +17,16 @@
     AVCodec          *codec;
     AVFormatContext  *_formateCtx;
     AVCodecContext   *_codecCtx;
+    
+    
+    NSInteger   videoStream_index;
+    
+    AVStream     *stream;
+    
+     double              fps;
+    
+    AVFrame      * avFrame;
+    //AVPicture   _picture;
 }
 
 @end
@@ -27,11 +36,17 @@
 {
     self = [super init];
     if(self){
-        [self initCodecWithPath:path];
+        if( [self initCodecWithPath:path])
+        {
+            return self;
+        }else{
+            return nil;
+        }
+       
     }
     return self;
 }
-- (void)initCodecWithPath:(NSString *)path
+- (BOOL)initCodecWithPath:(NSString *)path
 {
     avcodec_register_all();
     avformat_network_init();
@@ -39,14 +54,151 @@
     
     if(avformat_open_input(&_formateCtx, [path UTF8String], NULL, NULL) < 0 ){
         printf("open file failed");
-        return;
+        return NO;
     }
     
     if(avformat_find_stream_info(_formateCtx, NULL) < 0){
         printf("find stream failed");
-        return;
+        return NO;
     }
     
+    if((videoStream_index = av_find_best_stream(_formateCtx, AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0)) < 0)
+    {
+        printf("not find first stream");
+        return NO;
+    }
     
+    stream = _formateCtx->streams[videoStream_index];
+    _codecCtx = stream->codec;
+    if(stream->avg_frame_rate.den && stream->avg_frame_rate.num)
+    {
+        fps = av_q2d(stream->avg_frame_rate);
+    }else{
+        fps = 30.0f;
+    }
+    
+    //查找对应的解码器
+     codec = avcodec_find_decoder(_codecCtx->codec_id);
+    if(codec == NULL){
+        printf("not find codec");
+        return NO;
+    }
+    
+    //打开
+    if(avcodec_open2(_codecCtx, codec, NULL) < 0)
+    {
+        printf("open codec failed");
+        return NO;
+    }
+    
+    avFrame = av_frame_alloc();
+    self.outputWidth = _codecCtx->width;
+    self.outputHeight = _codecCtx->height;
+    return YES;
+    
+}
+
+- (BOOL)nextFrame
+{
+    int frameFinished = 0;
+    AVPacket   packet;
+    while (!frameFinished  && av_read_frame(_formateCtx, &packet) >= 0) {
+        if(packet.stream_index == videoStream_index){
+            avcodec_decode_video2(_codecCtx, avFrame, &frameFinished, &packet);
+        }
+    }
+    
+    return frameFinished != 0;
+}
+
+//- (UIImage *)getNextFrame
+//{
+//    float   picWidth;
+//    float   picHeight;
+//    AVPicture   picture;
+//    avpicture_alloc(&picture, AV_PIX_FMT_RGB24, _outputWidth, _outputHeight);
+//
+//    struct SwsContext * swsContext = sws_getContext(avFrame->width,
+//                                                       avFrame->height,
+//                                              AV_PIX_FMT_YUV420P,
+//                                                       _outputWidth,    _outputHeight,
+//                                                       AV_PIX_FMT_RGB24,
+//                                                       SWS_FAST_BILINEAR,
+//                                                       NULL,
+//                                                       NULL,
+//                                                       NULL);
+//    if(swsContext == NULL){
+//        return nil;
+//    }
+//    sws_scale(swsContext, avFrame->data, avFrame->linesize, 0, avFrame->height, picture.data, picture.linesize);
+//    sws_freeContext(swsContext);
+//
+//    CGColorSpaceRef  spaceRef = CGColorSpaceCreateDeviceRGB();
+//    CGBitmapInfo  bitMapInfo = kCGBitmapByteOrderDefault;
+//    CFDataRef dataRef = CFDataCreate(kCFAllocatorDefault, picture.data[0], picture.linesize[0]);
+//    CGDataProviderRef  providerRef = CGDataProviderCreateWithCFData(dataRef);
+//    CGImageRef  imageRef = CGImageCreate(_outputWidth, _outputHeight, 8, 24, picture.linesize[0], spaceRef, bitMapInfo, providerRef, NULL, NO, kCGRenderingIntentDefault);
+//    UIImage  *image = [[UIImage alloc] initWithCGImage:imageRef];
+//    return image;
+//
+//}
+-(UIImage *)currentImage {
+    if (!avFrame->data[0]) return nil;
+    return [self imageFromAVPicture];
+}
+- (UIImage *)imageFromAVPicture
+{
+    AVPicture   picture;
+   //
+    avpicture_alloc(&picture, AV_PIX_FMT_RGB24, _outputWidth, _outputHeight);
+
+    struct SwsContext * imgConvertCtx = sws_getContext(avFrame->width,
+                                                       avFrame->height,
+                                                       AV_PIX_FMT_YUV420P,
+                                                       _outputWidth,
+                                                       _outputHeight,
+                                                       AV_PIX_FMT_RGB24,
+                                                       SWS_FAST_BILINEAR,
+                                                       NULL,
+                                                       NULL,
+                                                       NULL);
+    if(imgConvertCtx == nil){
+        printf("SwsContext is null");
+        return nil;
+    }
+    sws_scale(imgConvertCtx,
+              avFrame->data,
+              avFrame->linesize,
+              0,
+              avFrame->height,
+              picture.data,
+              picture.linesize);
+    sws_freeContext(imgConvertCtx);
+    
+    return [UIImage imageWithCGImage:[self CGImageRefFromAVPicture:picture width:_outputWidth height:_outputHeight]];
+}
+
+-(CGImageRef)CGImageRefFromAVPicture:(AVPicture )pict width:(int)width height:(int)height
+{
+    CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
+    CFDataRef data = CFDataCreate(kCFAllocatorDefault,
+                                  pict.data[0],
+                                  pict.linesize[0] * height);
+    
+    CGDataProviderRef provider = CGDataProviderCreateWithCFData(data);
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGImageRef cgImage = CGImageCreate(width,
+                                       height,
+                                       8,
+                                       24,
+                                       pict.linesize[0],
+                                       colorSpace,
+                                       bitmapInfo,
+                                       provider,
+                                       NULL,
+                                       NO,
+                                       kCGRenderingIntentDefault);
+    avpicture_free(&pict);
+    return cgImage;
 }
 @end

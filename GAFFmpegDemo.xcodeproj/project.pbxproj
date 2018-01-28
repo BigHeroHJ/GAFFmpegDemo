@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F7100D6201B762100B8F535 /* 疑惑点 in Resources */ = {isa = PBXBuildFile; fileRef = 3F7100D5201B762100B8F535 /* 疑惑点 */; };
 		3FA39C6E201A2757000F9EBE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FA39C6D201A2757000F9EBE /* AppDelegate.m */; };
 		3FA39C71201A2757000F9EBE /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FA39C70201A2757000F9EBE /* ViewController.m */; };
 		3FA39C74201A2757000F9EBE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3FA39C72201A2757000F9EBE /* Main.storyboard */; };
@@ -56,6 +57,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3F7100D5201B762100B8F535 /* 疑惑点 */ = {isa = PBXFileReference; lastKnownFileType = text; path = "疑惑点"; sourceTree = "<group>"; };
 		3FA39C69201A2757000F9EBE /* GAFFmpegDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GAFFmpegDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FA39C6C201A2757000F9EBE /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3FA39C6D201A2757000F9EBE /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -502,6 +504,7 @@
 				3FA39D32201A2A05000F9EBE /* 部分参数变化解释 */,
 				3FA39D33201A2A05000F9EBE /* 时间参数解释 */,
 				3FA39D31201A2A04000F9EBE /* AVPacket&AVFrame解释 */,
+				3F7100D5201B762100B8F535 /* 疑惑点 */,
 			);
 			path = Doc;
 			sourceTree = "<group>";
@@ -617,6 +620,7 @@
 				3FA39D35201A2A05000F9EBE /* 部分参数变化解释 in Resources */,
 				3FA39D36201A2A05000F9EBE /* 时间参数解释 in Resources */,
 				3FA39D34201A2A05000F9EBE /* AVPacket&AVFrame解释 in Resources */,
+				3F7100D6201B762100B8F535 /* 疑惑点 in Resources */,
 				3FA39C74201A2757000F9EBE /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

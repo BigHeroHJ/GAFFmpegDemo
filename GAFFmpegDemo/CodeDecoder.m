@@ -11,7 +11,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 #include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
+
 #include <libavutil/avutil.h>
 #include <libswscale/swscale.h>
 #import <libavformat/avio.h>
@@ -31,7 +31,7 @@
     AVStream           *avStream;
     NSInteger           videoStream;
     CGFloat             videoTimeBaes;
-    AVFrame            *avFrame;//每一帧的数据信息保存 colorrange opaue buf quality pict_type linesize data..
+   
     CGFloat              fps;//每秒帧率
     CGFloat              timeBase;
     NSArray             *_videoStreams;//视频流集合
@@ -146,8 +146,8 @@ static int interrupCallback(void *ctx)
     }
     //找到打开解码器后 手动分配内存
     
-    avFrame = av_frame_alloc();//
-    if(!avFrame){
+    self.avFrame = av_frame_alloc();//
+    if(!self.avFrame){
         avcodec_close(codecContext);
         NSLog(@"内存分配失败");
         return;
@@ -173,31 +173,30 @@ static int interrupCallback(void *ctx)
 
 - (BOOL)readFrame
 {
-    
      AVPacket  packet;
-     int frameCount =0;
-     int  getPic = 0;
-     int readResult = av_read_frame(avFormatCtx, &packet);
-      while (readResult>=0 && packet.size > 0) {
+
+       int  getPic = 0;
+      while (av_read_frame(avFormatCtx, &packet)>=0 && !getPic) {
          if(packet.stream_index == videoStream){
            
-            getPic = avcodec_decode_video2(avCodecCtx, avFrame, &getPic, &packet);
+            getPic = avcodec_decode_video2(avCodecCtx, self.avFrame, &getPic, &packet);
+            
              if(getPic < 0){
                  printf("codec error");
                  return nil;
              }
-             printf("getPic:%d\n",getPic);
-             printf("videoStream:%ld\n",videoStream);
-             printf("%s--size:%d \n","",avFrame->pkt_size);
-             
+//             printf("getPic:%d\n",getPic);
+//             printf("videoStream:%ld\n",videoStream);
+//             printf("%s--size:%d \n","",avFrame->pkt_size);
+//
              if(getPic != 0){
                  av_packet_unref(&packet);
                  // 释放YUV frame
 //                 av_free(avFrame);
              }
-             //if(getPic){//存在可解码数据
+//             if(getPic){//存在可解码数据
 //                frameCount++;
-//               UIImage *image = [self handleYUVToRGBWithSwsc:avFrame];
+//                UIImage *image = [self handleYUVToRGBWithSwsc:avFrame];
 //                NSLog(@"image%@",image);
 //                //printf("fram count:%d",frameCount);
 //               // av_free(&packet);//用完及时 释放
@@ -210,7 +209,7 @@ static int interrupCallback(void *ctx)
     // 释放frame
     av_packet_unref(&avPacket);
     // 释放YUV frame
-    av_free(avFrame);
+    av_free(self.avFrame);
     // 关闭解码器
     if (avCodecCtx) avcodec_close(avCodecCtx);
     // 关闭文件
@@ -224,7 +223,7 @@ static int interrupCallback(void *ctx)
     AVPicture  avPicture ;
     avpicture_alloc(&avPicture, AV_PIX_FMT_RGB24, width, height);
     struct SwsContext * imageConvertCtx = sws_getContext(frame->width, frame->height, AV_PIX_FMT_YUV420P, frame->width, frame->height, AV_PIX_FMT_RGB24, SWS_FAST_BILINEAR, NULL, NULL, NULL);
-    if(imageConvertCtx == nil)
+    if(imageConvertCtx == NULL)
     {
         return nil;
     }
@@ -237,7 +236,7 @@ static int interrupCallback(void *ctx)
     CGDataProviderRef provider = CGDataProviderCreateWithCFData(dataref );
     
     CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
-    
+
     CGImageRef cgimageRef = CGImageCreate(frame->width, frame->height, 8, 24, avPicture.linesize[0], colorSpaceRef, bitmapInfo, provider, NULL, NO, NO);
     UIImage *image = [UIImage imageWithCGImage:cgimageRef];
     
@@ -259,7 +258,7 @@ static int interrupCallback(void *ctx)
             while (packetSize > 0) {
                 
                 int getFrame = 0;
-                int len = avcodec_decode_video2(avCodecCtx, avFrame, &getFrame, avPacket);
+                int len = avcodec_decode_video2(avCodecCtx, self.avFrame, &getFrame, avPacket);
                 if(len < 0){
                     NSLog(@"decode video error, skip packet");
                     break;
@@ -308,7 +307,7 @@ static int interrupCallback(void *ctx)
             int packetSize = packet.size;
             while (packetSize > 0) {
                 int getFrame = 0;
-                int len = avcodec_decode_video2(avCodecCtx, avFrame, &getFrame, &packet);
+                int len = avcodec_decode_video2(avCodecCtx, self.avFrame, &getFrame, &packet);
                 if(len < 0){
                     NSLog(@"decode video error, skip packet");
                     break;
@@ -346,20 +345,20 @@ static int interrupCallback(void *ctx)
 - (CG_Frame_YUV *)handleYUVFrame
 {
     CG_Frame_YUV  * yuvFrame = [[CG_Frame_YUV alloc] init];
-    yuvFrame.luma = copyFrameData(avFrame->data[0], avFrame->linesize[0], avCodecCtx->width, avCodecCtx->height);
-    yuvFrame.chromaB = copyFrameData(avFrame->data[1], avFrame->linesize[1], avCodecCtx->width/2, avCodecCtx->height/2);
-    yuvFrame.chromaR = copyFrameData(avFrame->data[2], avFrame->linesize[2], avCodecCtx->width/2, avCodecCtx->height/2);
+    yuvFrame.luma = copyFrameData(self.avFrame->data[0], self.avFrame->linesize[0], avCodecCtx->width, avCodecCtx->height);
+    yuvFrame.chromaB = copyFrameData(self.avFrame->data[1], self.avFrame->linesize[1], avCodecCtx->width/2, avCodecCtx->height/2);
+    yuvFrame.chromaR = copyFrameData(self.avFrame->data[2], self.avFrame->linesize[2], avCodecCtx->width/2, avCodecCtx->height/2);
 
     yuvFrame.width = avCodecCtx->width;
     yuvFrame.height = avCodecCtx->height;
-    yuvFrame.position = av_frame_get_best_effort_timestamp(avFrame) * timeBase;
+    yuvFrame.position = av_frame_get_best_effort_timestamp(self.avFrame) * timeBase;
     
-     const int64_t frameDuration = av_frame_get_pkt_duration(avFrame);
+     const int64_t frameDuration = av_frame_get_pkt_duration(self.avFrame);
     
     if (frameDuration) {
         
         yuvFrame.duration = frameDuration * timeBase;
-        yuvFrame.duration += avFrame->repeat_pict * timeBase * 0.5;
+        yuvFrame.duration += self.avFrame->repeat_pict * timeBase * 0.5;
         
         //if (_videoFrame->repeat_pict > 0) {
         //    LoggerVideo(0, @"_videoFrame.repeat_pict %d", _videoFrame->repeat_pict);

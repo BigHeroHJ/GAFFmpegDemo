@@ -7,7 +7,21 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
 
 @interface GACodec : NSObject
+
+/* 输出图像大小。默认设置为源大小。 */
+@property (nonatomic,assign) int outputWidth, outputHeight;
+
+@property (nonatomic, strong) UIImage *currentImage;
+
 - (id)initWithVideo:(NSString *)path;
+
+
+- (BOOL)nextFrame;
+
+- (UIImage *)getNextFrame;
+- (UIImage *)imageFromAVPicture;
 @end
