@@ -571,6 +571,7 @@
 		3FA39C61201A2757000F9EBE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = GA;
 				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = MountainX;
 				TargetAttributes = {

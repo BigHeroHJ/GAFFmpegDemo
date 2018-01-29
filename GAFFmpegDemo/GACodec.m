@@ -34,6 +34,7 @@
 @implementation GACodec
 - (id)initWithVideo:(NSString *)path
 {
+    
     self = [super init];
     if(self){
         if( [self initCodecWithPath:path])
@@ -101,11 +102,20 @@
 - (BOOL)nextFrame
 {
     int frameFinished = 0;
-    AVPacket   packet;
-    while (!frameFinished  && av_read_frame(_formateCtx, &packet) >= 0) {
-        if(packet.stream_index == videoStream_index){
-            avcodec_decode_video2(_codecCtx, avFrame, &frameFinished, &packet);
+    AVPacket   *packet = av_packet_alloc();
+    while (!frameFinished  && av_read_frame(_formateCtx, packet) >= 0) {
+        if(packet->stream_index == videoStream_index){
+            avcodec_decode_video2(_codecCtx, avFrame, &frameFinished, packet);
+            av_packet_unref(packet);
         }
+    }
+   
+    av_packet_free(&packet);
+    
+    if(frameFinished == 0){
+        av_free(_codecCtx);
+        av_free(_formateCtx);
+        avFrame = NULL;
     }
     
     return frameFinished != 0;

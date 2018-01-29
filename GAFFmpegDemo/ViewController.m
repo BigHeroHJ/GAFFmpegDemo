@@ -24,9 +24,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+  
 
-    GACodec  *codec1 = [[GACodec alloc] initWithVideo:@"//Users/xds/Desktop/视频/英雄时刻_20160103-13点35分09s.avi"];
+    GACodec  *codec1 = [[GACodec alloc] initWithVideo:@"/Users/lemonholl/Downloads/9533522808.f4v.mp4"];
     
     gaCodec = codec1;
 //    coDec = [[CodeDecoder alloc] init];
