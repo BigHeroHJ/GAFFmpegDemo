@@ -11,6 +11,7 @@
 #include <libavformat/avformat.h>
 #include <libswscale//swscale.h>
 #include <libavutil/intreadwrite.h>
+#import "CG_Frame_YUV.h"
 
 @interface GACodec()
 {
@@ -113,9 +114,9 @@
     av_packet_free(&packet);
     
     if(frameFinished == 0){
-        av_free(_codecCtx);
-        av_free(_formateCtx);
-        avFrame = NULL;
+//        av_free(_codecCtx);
+//        av_free(_formateCtx);
+//        avFrame = NULL;
     }
     
     return frameFinished != 0;
@@ -184,31 +185,59 @@
               picture.data,
               picture.linesize);
     sws_freeContext(imgConvertCtx);
+   
+    dispatch_async(dispatch_get_main_queue(), ^{
+       CG_Frame_YUV * yuvFrame = [self displayFrame];
+        if([self.delegate respondsToSelector:@selector(updateDisplayFrame:)]){
+            [self.delegate updateDisplayFrame:yuvFrame];
+        }
+    });
+    //[UIImage imageWithCGImage:[self CGImageRefFromAVPicture:picture width:_outputWidth height:_outputHeight]]
     
-    return [UIImage imageWithCGImage:[self CGImageRefFromAVPicture:picture width:_outputWidth height:_outputHeight]];
+//    CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
+//    CFDataRef data = CFDataCreate(kCFAllocatorDefault,
+//                                  picture.data[0],
+//                                  picture.linesize[0] * _outputHeight);
+//
+//    CGDataProviderRef provider = CGDataProviderCreateWithCFData(data);
+//    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+//    CGImageRef cgImage = CGImageCreate(_outputWidth,
+//                                       _outputHeight,
+//                                       8,
+//                                       24,
+//                                       picture.linesize[0],
+//                                       colorSpace,
+//                                       bitmapInfo,
+//                                       provider,
+//                                       NULL,
+//                                       NO,
+//                                       kCGRenderingIntentDefault);
+     avpicture_free(&picture);
+    return nil;
 }
 
--(CGImageRef)CGImageRefFromAVPicture:(AVPicture )pict width:(int)width height:(int)height
+- (CG_Frame_YUV *)displayFrame
 {
-    CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
-    CFDataRef data = CFDataCreate(kCFAllocatorDefault,
-                                  pict.data[0],
-                                  pict.linesize[0] * height);
+    CG_Frame_YUV *yuvFrame = [[CG_Frame_YUV alloc] init];
+    yuvFrame.luma =  copyDecodedFrame(avFrame->data[0], _codecCtx->width, _codecCtx->height, avFrame->linesize[0]);
+    yuvFrame.chromaB = copyDecodedFrame(avFrame->data[1], _codecCtx->width / 2.0f ,  _codecCtx->height / 2.0f, avFrame->linesize[1]);
+    yuvFrame.chromaR = copyDecodedFrame(avFrame->data[2], _codecCtx->width / 2.0f, _codecCtx->height / 2.0f, avFrame->linesize[2]);
     
-    CGDataProviderRef provider = CGDataProviderCreateWithCFData(data);
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGImageRef cgImage = CGImageCreate(width,
-                                       height,
-                                       8,
-                                       24,
-                                       pict.linesize[0],
-                                       colorSpace,
-                                       bitmapInfo,
-                                       provider,
-                                       NULL,
-                                       NO,
-                                       kCGRenderingIntentDefault);
-    avpicture_free(&pict);
-    return cgImage;
+    yuvFrame.width = _codecCtx->width;
+    yuvFrame.height = _codecCtx->height;
+    return yuvFrame;
+}
+
+static NSData * copyDecodedFrame(unsigned char  *src,int width,int height,int linese)
+{
+    width = MIN(linese, width);
+    NSMutableData * data = [NSMutableData dataWithLength:width * height];
+    Byte * byts = data.mutableBytes;
+    for (NSInteger i = 0 ; i<height; i++) {
+        memcpy(byts, src, width);
+        byts += width;
+        src += linese;
+    }
+    return data;
 }
 @end

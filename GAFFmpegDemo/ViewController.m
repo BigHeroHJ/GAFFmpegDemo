@@ -9,8 +9,10 @@
 #import "ViewController.h"
 #import "GACodec.h"
 #import "CodeDecoder.h"
+#import "CG_Frame_YUV.h"
 
-@interface ViewController ()
+
+@interface ViewController ()<GACodecDelegat>
 {
     GACodec       *gaCodec;
     CodeDecoder   *coDec;
@@ -26,8 +28,8 @@
     [super viewDidLoad];
   
 
-    GACodec  *codec1 = [[GACodec alloc] initWithVideo:@"/Users/lemonholl/Downloads/9533522808.f4v.mp4"];
-    
+    GACodec  *codec1 = [[GACodec alloc] initWithVideo:@"/Users/xds/Desktop/未命名文件夹/480P_600K_79615901.mp4"];
+    codec1.delegate  = self;
     gaCodec = codec1;
 //    coDec = [[CodeDecoder alloc] init];
 //    [coDec openWithPath:@"/Users/xds/Desktop/曹高安项目/GAFFmpegDemo/11.mp4"];
@@ -39,6 +41,10 @@
                                    userInfo:nil
                                     repeats:YES];
     //[coDec decodecFrame];
+}
+- (void)updateDisplayFrame:(CG_Frame_YUV *)yuvFrame
+{
+    NSLog(@"data1:%@",yuvFrame.luma);
 }
 - (void)displayNextFrame:(NSTimer *)timer
 {
