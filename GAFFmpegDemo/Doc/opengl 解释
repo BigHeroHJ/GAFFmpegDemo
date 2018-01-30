@@ -1,0 +1,838 @@
+http://blog.csdn.net/ylbs110/article/details/52074826
+
+一、 基础
+1. 渲染流程
+3D坐标转为2D坐标的处理过程是由OpenGL的图形渲染管线管理的。
+
+管线：Graphics Pipeline，大多译为管线，实际上指的是一堆原始图形数据途经一个输送管道，期间经过各种变化处理最终出现在屏幕的过程。它可以被划分为两个主要部分：第一部分把你的3D坐标转换为2D坐标，第二部分是把2D坐标转变为实际的有颜色的像素。
+
+像素和坐标：2D坐标和像素也是不同的，2D坐标精确表示一个点在2D空间中的位置，而2D像素是这个点的近似值，2D像素受到你的屏幕/窗口分辨率的限制。
+
+图形渲染管线接受一组3D坐标，然后把它们转变为你屏幕上的有色2D像素输出。图形渲染管线可以被划分为几个阶段，每个阶段将会把前一个阶段的输出作为输入。由于它们具有并行执行的特性，当今大多数显卡都有成千上万的小处理核心，它们在GPU上为每一个（渲染管线）阶段运行各自的小程序，从而在图形渲染管线中快速处理你的数据。这些小程序叫做着色器(Shader)。有些着色器允许开发者自己配置，这就允许我们用自己写的着色器来替换默认的，OpenGL着色器是用OpenGL着色器语言(OpenGL Shading Language, GLSL)写成的。
+下图是一个图形渲染管线的每个阶段的抽象展示。要注意蓝色部分代表的是我们可以注入自定义的着色器的部分。在现代OpenGL中，我们必须定义至少一个顶点着色器和一个片段着色器（因为GPU中没有默认的顶点/片段着色器）。
+这里写图片描述
+我们以数组的形式传递3个3D坐标作为图形渲染管线的输入，用来表示一个三角形，这个数组叫做顶点数据(Vertex Data)；顶点数据是一系列顶点的集合。一个顶点(Vertex)是一个3D坐标的数据的集合。而顶点数据是用顶点属性(Vertex Attribute)表示的，它可以包含任何我们想用的数据，但是简单起见，我们假定每个顶点只由一个3D位置和一些颜色值组成的。
+
+顶点着色器(Vertex Shader)：它把一个单独的顶点作为输入。顶点着色器主要的目的是把3D坐标转为另一种3D坐标（后面会解释），同时顶点着色器允许我们对顶点属性进行一些基本处理。
+几何着色器(Geometry Shader)：几何着色器把图元形式的一系列顶点的集合作为输入，它可以通过产生新顶点构造出新的（或是其它的）图元来生成其他形状。例子中，它生成了另一个三角形。
+光栅化阶段(Rasterization Stage)：这里它会把图元映射为最终屏幕上相应的像素，生成供片段着色器(Fragment Shader)使用的片段(Fragment)。在片段着色器运行之前会执行裁切(Clipping)。裁切会丢弃超出你的视图以外的所有像素，用来提升执行效率。
+片段着色器：主要目的是计算一个像素的最终颜色，这也是所有OpenGL高级效果产生的地方。通常，片段着色器包含3D场景的数据（比如光照、阴影、光的颜色等等），这些数据可以被用来计算最终像素的颜色。
+Alpha测试和混合(Blending)：这个阶段检测片段的对应的深度（和模板(Stencil)）值（后面会讲），用它们来判断这个像素是其它物体的前面还是后面，决定是否应该丢弃。这个阶段也会检查alpha值（alpha值定义了一个物体的透明度）并对物体进行混合(Blend)。
+
+2. 标准化设备坐标(Normalized Device Coordinates)
+一旦你的顶点坐标已经在顶点着色器中处理过，它们就应该是标准化设备坐标了，标准化设备坐标是一个x、y和z值在-1.0到1.0的一小段空间。任何落在范围外的坐标都会被丢弃/裁剪，不会显示在你的屏幕上。下面你会看到我们定义的在标准化设备坐标中的三角形(忽略z轴)：
+这里写图片描述
+与通常的屏幕坐标不同，y轴正方向为向上，(0, 0)坐标是这个图像的中心，而不是左上角。最终你希望所有(变换过的)坐标都在这个坐标空间中，否则它们就不可见了。
+你的标准化设备坐标接着会变换为屏幕空间坐标(Screen-space Coordinates)，这是使用你通过glViewport函数提供的数据，进行视口变换(Viewport Transform)完成的。所得的屏幕空间坐标又会被变换为片段输入到片段着色器中。
+
+二、 着色器示例
+1. 顶点着色器
+#version 330 core
+layout(location = 0) in vec3 position;
+void main()
+{
+gl_Position = vec4(position.x, position.y, position.z, 1.0);
+}
+1
+2
+3
+4
+5
+6
+每个着色器都起始于一个版本声明。OpenGL 3.3以及和更高版本中，GLSL版本号和OpenGL的版本是匹配的（比如说GLSL 420版本对应于OpenGL 4.2）。
+下一步，使用in关键字，在顶点着色器中声明所有的输入顶点属性(Input Vertex Attribute)。现在我们只关心位置(Position)数据，所以我们只需要一个顶点属性。GLSL有一个向量数据类型，它包含1到4个float分量，包含的数量可以从它的后缀数字看出来。由于每个顶点都有一个3D坐标，我们就创建一个vec3输入变量position。我们同样也通过layout (location = 0)设定了输入变量的位置值(Location)你后面会看到为什么我们会需要这个位置值。
+为了设置顶点着色器的输出，我们必须把位置数据赋值给预定义的gl_Position变量，它在幕后是vec4类型的。在main函数的最后，我们将gl_Position设置的值会成为该顶点着色器的输出。由于我们的输入是一个3分量的向量，我们必须把它转换为4分量的。我们可以把vec3的数据作为vec4构造器的参数，同时把w分量设置为1.0f（我们会在后面解释为什么）来完成这一任务。
+
+2. 片段着色器
+#version 330 core
+out vec4 color;
+void main()
+{
+color = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+}
+1
+2
+3
+4
+5
+6
+片段着色器只需要一个输出变量，这个变量是一个4分量向量，它表示的是最终的输出颜色，我们应该自己将其计算出来。我们可以用out关键字声明输出变量，这里我们命名为color。下面，我们将一个alpha值为1.0(1.0代表完全不透明)的橘黄色的vec4赋值给颜色输出。
+
+三、 绘制图形
+1. 顶点输入
+OpenGL是一个3D图形库，所以我们在OpenGL中指定的所有坐标都是3D坐标（x、y和z）。例如我们希望渲染一个三角形，我们一共要指定三个顶点，每个顶点都有一个3D位置，我们会将它们以标准化设备坐标的形式（OpenGL的可见区域）定义为一个GLfloat数组：
+
+GLfloat vertices[] = {
+-0.5f, -0.5f, 0.0f,
+0.5f, -0.5f, 0.0f,
+0.0f,  0.5f, 0.0f
+};
+1
+2
+3
+4
+5
+我们会把它作为输入发送给图形渲染管线的第一个处理阶段：顶点着色器。它会在GPU上创建内存用于储存我们的顶点数据，还要配置OpenGL如何解释这些内存，并且指定其如何发送给显卡。顶点着色器接着会处理我们在内存中指定数量的顶点。
+我们通过顶点缓冲对象(Vertex Buffer Objects, VBO)管理这个内存，它会在GPU内存(通常被称为显存)中储存大量顶点。使用这些缓冲对象的好处是我们可以一次性的发送一大批数据到显卡上，而不是每个顶点发送一次。
+就像OpenGL中的其它对象一样，这个缓冲有一个独一无二的ID，所以我们可以使用glGenBuffers函数和一个缓冲ID生成一个VBO对象：
+
+GLuint VBO;
+glGenBuffers(1, &VBO);
+1
+2
+OpenGL有很多缓冲对象类型，顶点缓冲对象的缓冲类型是GL_ARRAY_BUFFER。OpenGL允许我们同时绑定多个缓冲，只要它们是不同的缓冲类型。我们可以使用glBindBuffer函数把新创建的缓冲绑定到GL_ARRAY_BUFFER目标上：
+
+glBindBuffer(GL_ARRAY_BUFFER, VBO);
+1
+从这一刻起，我们使用的任何（在GL_ARRAY_BUFFER目标上的）缓冲调用都会用来配置当前绑定的缓冲(VBO)。然后我们可以调用glBufferData函数，它会把之前定义的顶点数据复制到缓冲的内存中：
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+glBufferData是一个专门用来把用户定义的数据复制到当前绑定缓冲的函数。它的第一个参数是目标缓冲的类型：顶点缓冲对象当前绑定到GL_ARRAY_BUFFER目标上。第二个参数指定传输数据的大小(以字节为单位)；用一个简单的sizeof计算出顶点数据大小就行。第三个参数是我们希望发送的实际数据。
+第四个参数指定了我们希望显卡如何管理给定的数据。它有三种形式：
+
+GL_STATIC_DRAW ：数据不会或几乎不会改变。
+GL_DYNAMIC_DRAW：数据会被改变很多。
+GL_STREAM_DRAW ：数据每次绘制时都会改变。
+2. 编译着色器
+我们首先要做的是创建一个着色器对象，注意还是用ID来引用的。所以我们储存这个顶点着色器为GLuint，然后用glCreateShader创建这个着色器，我们把需要创建的着色器类型以参数形式提供给glCreateShader。
+
+GLuint vertexShader;
+vertexShader = glCreateShader(GL_VERTEX_SHADER);
+1
+2
+下一步我们把这个着色器源码附加到着色器对象上，然后编译它：
+
+glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+glCompileShader(vertexShader);
+1
+2
+glShaderSource函数把要编译的着色器对象作为第一个参数。第二参数指定了传递的源码字符串数量，这里只有一个。第三个参数是顶点着色器真正的源码，第四个参数我们先设置为NULL。
+同样的，我们编译片段着色器：
+
+GLuint fragmentShader;
+fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+glShaderSource(fragmentShader, 1, &fragmentShaderSource, null);
+glCompileShader(fragmentShader);
+1
+2
+3
+4
+你可能会希望检测在调用glCompileShader后编译是否成功了，如果没成功的话，你还会希望知道错误是什么，这样你才能修复它们。检测编译时错误可以通过以下代码来实现：
+
+GLint success;
+GLchar infoLog[512];
+glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+1
+2
+3
+首先我们定义一个整型变量来表示是否成功编译，还定义了一个储存错误消息（如果有的话）的容器。然后我们用glGetShaderiv检查是否编译成功。如果编译失败，我们会用glGetShaderInfoLog获取错误消息，然后打印它。
+
+if (!success)
+{
+glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+}
+1
+2
+3
+4
+5
+编译片段着色器的过程与顶点着色器类似，只不过我们使用GL_FRAGMENT_SHADER常量作为着色器类型：
+
+3. 着色器程序
+当链接着色器至一个程序的时候，它会把每个着色器的输出链接到下个着色器的输入。当输出和输入不匹配的时候，你会得到一个连接错误。
+创建一个程序对象很简单：
+
+GLuint shaderProgram;
+shaderProgram = glCreateProgram();
+1
+2
+glCreateProgram函数创建一个程序，并返回新创建程序对象的ID引用。现在我们需要把之前编译的着色器附加到程序对象上，然后用glLinkProgram链接它们：
+
+glAttachShader(shaderProgram, vertexShader);
+glAttachShader(shaderProgram, fragmentShader);
+glLinkProgram(shaderProgram);
+1
+2
+3
+我们把着色器附加到了程序上，然后用glLinkProgram链接。
+就像着色器的编译一样，我们也可以检测链接着色器程序是否失败，并获取相应的日志。与上面不同，我们不会调用glGetShaderiv和glGetShaderInfoLog，现在我们使用：
+
+glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+if (!success) {
+glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+...
+}
+1
+2
+3
+4
+5
+得到的结果就是一个程序对象，我们可以调用glUseProgram函数，用刚创建的程序对象作为它的参数，以激活这个程序对象，之后每个着色器调用和渲染调用都会使用这个程序对象（也就是之前写的着色器)了：
+
+glUseProgram(shaderProgram);
+1
+在把着色器对象链接到程序对象以后，记得删除着色器对象，我们不再需要它们了：
+
+glDeleteShader(vertexShader);
+glDeleteShader(fragmentShader);
+1
+2
+4. 链接顶点属性
+我们的顶点缓冲数据会被解析为下面这样子：
+这里写图片描述
+- 位置数据被储存为32-bit（4字节）浮点值。
+- 每个位置包含3个这样的值。
+- 在这3个值之间没有空隙（或其他值）。这几个值在数组中紧密排列。
+- 数据中第一个值在缓冲开始的位置。
+
+有了这些信息我们就可以使用glVertexAttribPointer函数告诉OpenGL该如何解析顶点数据（应用到逐个顶点属性上）了：
+
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat),
+(GLvoid*)0); glEnableVertexAttribArray(0);
+glVertexAttribPointer函数的参数非常多，所以我会逐一介绍它们：
+
+第一个参数指定我们要配置的顶点属性。我们在顶点着色器中使用layout(location =
+0)定义了position顶点属性的位置值(Location)，它可以把顶点属性的位置值设置为0。因为我们希望把数据传递到这一个顶点属性中，所以这里我们传入0。
+第二个参数指定顶点属性的大小。顶点属性是一个vec3，它由3个值组成，所以大小是3。
+第三个参数指定数据的类型，这里是GL_FLOAT(GLSL中vec*都是由浮点数值组成的)。
+下个参数定义我们是否希望数据被标准化(Normalize)。如果我们设置为GL_TRUE，所有数据都会被映射到0（对于有符号型signed数据是-1）到1之间。我们把它设置为GL_FALSE。
+第五个参数叫做步长(Stride)，它告诉我们在连续的顶点属性组之间的间隔。由于下个组位置数据在3个GLfloat之后，我们把步长设置为3
+sizeof(GLfloat)。要注意的是由于我们知道这个数组是紧密排列的（在两个顶点属性之间没有空隙）我们也可以设置为0来让OpenGL决定具体步长是多少（只有当数值是紧密排列时才可用）。一旦我们有更多的顶点属性，我们就必须更小心地定义每个顶点属性之间的间隔，我们在后面会看到更多的例子(译注:
+这个参数的意思简单说就是从这个属性第二次出现的地方到整个数组0位置之间有多少字节)。
+最后一个参数的类型是GLvoid*，所以需要我们进行这个奇怪的强制类型转换。它表示位置数据在缓冲中起始位置的偏移量(Offset)。由于位置数据在数组的开头，所以这里是0。我们会在后面详细解释这个参数。
+每个顶点属性从一个VBO管理的内存中获得它的数据，而具体是从哪个VBO（程序中可以有多个VBO）获取则是通过在调用glVetexAttribPointer时绑定到GL_ARRAY_BUFFER的VBO决定的。由于在调用glVetexAttribPointer之前绑定的是先前定义的VBO对象，顶点属性0现在会链接到它的顶点数据。
+现在我们已经定义了OpenGL该如何解释顶点数据，我们现在应该使用glEnableVertexAttribArray，以顶点属性位置值作为参数，启用顶点属性；顶点属性默认是禁用的。
+
+5. 顶点数组对象
+顶点数组对象(Vertex Array Object, VAO)可以像顶点缓冲对象那样被绑定，任何随后的顶点属性调用都会储存在这个VAO中。这样的好处就是，当配置顶点属性指针时，你只需要将那些调用执行一次，之后再绘制物体的时候只需要绑定相应的VAO就行了。
+一个顶点数组对象会储存以下这些内容：
+
+glEnableVertexAttribArray和glDisableVertexAttribArray的调用。
+通过glVertexAttribPointer设置的顶点属性配置。
+通过glVertexAttribPointer调用进行的顶点缓冲对象与顶点属性链接。
+这里写图片描述
+创建一个VAO和创建一个VBO很类似：
+
+GLuint VAO;
+glGenVertexArrays(1, &VAO);
+1
+2
+要想使用VAO，要做的只是使用glBindVertexArray绑定VAO。从绑定之后起，我们应该绑定和配置对应的VBO和属性指针，之后解绑VAO供之后使用。当我们打算绘制一个物体的时候，我们只要在绘制物体前简单地把VAO绑定到希望使用的设定上就行了。这段代码应该看起来像这样：
+
+// ..:: 初始化代码（只运行一次 (除非你的物体频繁改变)） :: ..
+// 1. 绑定VAO
+glBindVertexArray(VAO);
+// 2. 把顶点数组复制到缓冲中供OpenGL使用
+glBindBuffer(GL_ARRAY_BUFFER, VBO);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+// 3. 设置顶点属性指针
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+glEnableVertexAttribArray(0);
+//4. 解绑VAO
+glBindVertexArray(0);
+
+[...]
+// ..:: 绘制代（游戏循环中） :: ..
+// 5. 绘制物体
+glUseProgram(shaderProgram);
+glBindVertexArray(VAO);
+someOpenGLFunctionThatDrawsOurTriangle();
+glBindVertexArray(0);
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+通常情况下当我们配置好OpenGL对象以后要解绑它们，这样我们才不会在其它地方错误地配置它们。
+
+6. 绘制三角形
+要想绘制我们想要的物体，OpenGL给我们提供了glDrawArrays函数，它使用当前激活的着色器，之前定义的顶点属性配置，和VBO的顶点数据（通过VAO间接绑定）来绘制图元。
+
+glUseProgram(shaderProgram);
+glBindVertexArray(VAO);
+glDrawArrays(GL_TRIANGLES, 0, 3);
+glBindVertexArray(0);
+1
+2
+3
+4
+glDrawArrays函数第一个参数是我们打算绘制的OpenGL图元的类型。由于我们在一开始时说过，我们希望绘制的是一个三角形，这里传递GL_TRIANGLES给它。第二个参数指定了顶点数组的起始索引，我们这里填0。最后一个参数指定我们打算绘制多少个顶点，这里是3（我们只从我们的数据中渲染一个三角形，它只有3个顶点长）。
+
+7. 索引缓冲对象
+索引绘制(Indexed Drawing)允许我们在已经存储的顶点中选取不同的顶点来绘制不同的图形，而不需要对对同一个顶点进行重复定义。进行索引绘制需要借助索引缓冲对象(Element Buffer Object，EBO，也叫Index Buffer Object，IBO)。
+和顶点缓冲对象一样，EBO也是一个缓冲，它专门储存索引，OpenGL调用这些顶点的索引来决定该绘制哪个顶点。首先，我们先要定义（独一无二的）顶点，和绘制出矩形所需的索引：
+
+GLfloat vertices[] = {
+0.5f, 0.5f, 0.0f,   // 右上角
+0.5f, -0.5f, 0.0f,  // 右下角
+-0.5f, -0.5f, 0.0f, // 左下角
+-0.5f, 0.5f, 0.0f   // 左上角
+};
+
+GLuint indices[] = { // 注意索引从0开始!
+0, 1, 3, // 第一个三角形
+1, 2, 3  // 第二个三角形
+};
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+下一步我们需要创建索引缓冲对象：
+
+GLuint EBO;
+glGenBuffers(1, &EBO);
+1
+2
+与VBO类似，我们先绑定EBO然后用glBufferData把索引复制到缓冲里。同样，和VBO类似，我们会把这些函数调用放在绑定和解绑函数调用之间，只不过这次我们把缓冲的类型定义为GL_ELEMENT_ARRAY_BUFFER。
+
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+1
+2
+要注意的是，我们传递了GL_ELEMENT_ARRAY_BUFFER当作缓冲目标。最后一件要做的事是用glDrawElements来替换glDrawArrays函数，来指明我们从索引缓冲渲染。使用glDrawElements时，我们会使用当前绑定的索引缓冲对象中的索引进行绘制：
+
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+1
+2
+第一个参数指定了我们绘制的模式，这个和glDrawArrays的一样。第二个参数是我们打算绘制顶点的个数，这里填6，也就是说我们一共需要绘制6个顶点。第三个参数是索引的类型，这里是GL_UNSIGNED_INT。最后一个参数里我们可以指定EBO中的偏移量（或者传递一个索引数组，但是这是当你不在使用索引缓冲对象的时候），但是我们会在这里填写0。
+glDrawElements函数从当前绑定到GL_ELEMENT_ARRAY_BUFFER目标的EBO中获取索引。这意味着我们必须在每次要用索引渲染一个物体时绑定相应的EBO，这还是有点麻烦。不过顶点数组对象同样可以保存索引缓冲对象的绑定状态。VAO绑定时正在绑定的索引缓冲对象会被保存为VAO的元素缓冲对象。绑定VAO的同时也会自动绑定EBO。
+这里写图片描述
+当目标是GL_ELEMENT_ARRAY_BUFFER的时候，VAO会储存glBindBuffer的函数调用。这也意味着它也会储存解绑调用，所以确保你没有在解绑VAO之前解绑索引数组缓冲，否则它就没有这个EBO配置了。
+最后的初始化和绘制代码现在看起来像这样：
+
+// ..:: 初始化代码 :: ..
+// 1. 绑定顶点数组对象
+glBindVertexArray(VAO);
+// 2. 把我们的顶点数组复制到一个顶点缓冲中，供OpenGL使用
+glBindBuffer(GL_ARRAY_BUFFER, VBO);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+// 3. 复制我们的索引数组到一个索引缓冲中，供OpenGL使用
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+// 3. 设定顶点属性指针
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+glEnableVertexAttribArray(0);
+// 4. 解绑VAO（不是EBO！）
+glBindVertexArray(0);
+
+[...]
+
+// ..:: 绘制代码（游戏循环中） :: ..
+
+glUseProgram(shaderProgram);
+glBindVertexArray(VAO);
+glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0)
+glBindVertexArray(0);
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+转载请注明出处：http://blog.csdn.net/ylbs110/article/details/52074826
+
+四、 示例
+本示例分别使用顶点数组对象和索引缓冲对象两种方式绘制了一个黄色梯形房顶和橙色长方形墙体，具体见代码注释
+
+代码：
+#include <iostream>
+using namespace std;
+// GLEW
+#define GLEW_STATIC
+#include <GL/glew.h>
+// GLFW
+#include <GLFW/glfw3.h>
+
+const GLuint WIDTH = 800, HEIGHT = 600;
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void checkError(GLuint shader, GLbyte status);
+
+// Shaders
+const GLchar* vertexShaderSource = "#version 330 core\n"
+"layout (location = 0) in vec3 position;\n"
+"void main()\n"
+"{\n"
+"gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
+"}\0";
+const GLchar* fragmentShaderSourceOrange = "#version 330 core\n"
+"out vec4 color;\n"
+"void main()\n"
+"{\n"
+"color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"}\n\0";
+
+const GLchar* fragmentShaderSourceYellow = "#version 330 core\n"
+"out vec4 color;\n"
+"void main()\n"
+"{\n"
+"color = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n"
+"}\n\0";
+
+GLuint vertexShader, fragmentShaderOrange, fragmentShaderYellow, shaderProgramOrange, shaderProgramYellow;
+GLuint VBO1, VAO1;
+GLuint VBO2, VAO2, EBO2;
+
+void shaderInit() {
+// 顶点 shader
+vertexShader = glCreateShader(GL_VERTEX_SHADER);
+glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+glCompileShader(vertexShader);
+// 检查编译错误
+checkError(vertexShader, GL_COMPILE_STATUS);
+
+// 初始化橙色片段 shader
+fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER);
+glShaderSource(fragmentShaderOrange, 1, &fragmentShaderSourceOrange, NULL);
+glCompileShader(fragmentShaderOrange);
+// 检查事件错误
+checkError(fragmentShaderOrange, GL_COMPILE_STATUS);
+
+//初始化黄色片段shader
+fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER);
+glShaderSource(fragmentShaderYellow, 1, &fragmentShaderSourceYellow, NULL);
+glCompileShader(fragmentShaderYellow);
+// 检查事件错误
+checkError(fragmentShaderYellow, GL_COMPILE_STATUS);
+
+// 链接橙色 shader
+shaderProgramOrange = glCreateProgram();
+glAttachShader(shaderProgramOrange, vertexShader);
+glAttachShader(shaderProgramOrange, fragmentShaderOrange);
+glLinkProgram(shaderProgramOrange);
+// 检查链接错误
+checkError(shaderProgramOrange, GL_LINK_STATUS);
+
+//链接黄色 shader
+shaderProgramYellow = glCreateProgram();
+glAttachShader(shaderProgramYellow, vertexShader);
+glAttachShader(shaderProgramYellow, fragmentShaderYellow);
+glLinkProgram(shaderProgramYellow);
+// 检查链接错误
+checkError(shaderProgramYellow, GL_LINK_STATUS);
+
+glDeleteShader(vertexShader);
+glDeleteShader(fragmentShaderOrange);
+glDeleteShader(fragmentShaderYellow);
+}
+
+void vertexObjectInit() {
+//不使用索引缓冲对象用两个三角形绘制一个梯形
+// 设置顶点缓存和属性指针
+GLfloat vertices1[] = {
+-0.5f, 0.2f, 0.0f, // BottomLeft
+0.5f, 0.2f, 0.0f, // BottomRight
+-0.2f,  0.5f, 0.0f,  // TopLeft
+
+0.5f, 0.2f, 0.0f, // BottomRight
+-0.2f,  0.5f, 0.0f,  // TopLeft
+0.2f,  0.5f, 0.0f  // TopRight
+};
+//创建索引缓冲对象
+glGenBuffers(1, &VBO1);
+glGenVertexArrays(1, &VAO1);
+glBindVertexArray(VAO1);
+// 把顶点数组复制到缓冲中供OpenGL使用
+glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+// 设置顶点属性指针
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+glEnableVertexAttribArray(0);
+
+glBindBuffer(GL_ARRAY_BUFFER, 0);// 这个方法将顶点属性指针注册到VBO作为当前绑定顶点对象，然后我们就可以安全的解绑
+glBindVertexArray(0);// 解绑 VAO (这通常是一个很好的用来解绑任何缓存/数组并防止奇怪错误的方法)
+
+// 使用索引缓冲对象用两个三角形绘制一个长方形
+GLfloat vertices[] = {
+-0.5f, 0.2f, 0.0f, // TopLeft
+0.5f, 0.2f, 0.0f, // TopRight
+-0.5f,  -0.5f, 0.0f,  // BottomLeft
+0.5f,  -0.5f, 0.0f  // BottomRight
+};
+GLuint indices[] = {
+0,1,2,
+1,2,3
+};
+glGenBuffers(1, &VBO2);
+glGenBuffers(1, &EBO2);
+glGenVertexArrays(1, &VAO2);
+glBindVertexArray(VAO2);
+
+glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
+glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+glEnableVertexAttribArray(0);
+
+glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+glBindVertexArray(0);
+}
+
+int main()
+{
+//初始化GLFW
+glfwInit();
+glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
+//创建窗口对象
+GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", nullptr, nullptr);
+if (window == nullptr)
+{
+std::cout << "Failed to create GLFW window" << std::endl;
+glfwTerminate();
+return -1;
+}
+glfwMakeContextCurrent(window);
+//注册键盘回调
+glfwSetKeyCallback(window, key_callback);
+
+//初始化GLEW
+glewExperimental = GL_TRUE;
+if (glewInit() != GLEW_OK)
+{
+std::cout << "Failed to initialize GLEW" << std::endl;
+return -1;
+}
+//告诉OpenGL渲染窗口尺寸大小
+int width, height;
+glfwGetFramebufferSize(window, &width, &height);
+
+glViewport(0, 0, width, height);
+
+//初始化并绑定shaders
+shaderInit();
+
+//初始化顶点对象数据
+vertexObjectInit();
+
+//让窗口接受输入并保持运行
+while (!glfwWindowShouldClose(window))
+{
+//检查事件
+glfwPollEvents();
+
+//渲染指令
+glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+glClear(GL_COLOR_BUFFER_BIT);
+
+//绘制梯形
+glUseProgram(shaderProgramYellow);
+glBindVertexArray(VAO1);
+glDrawArrays(GL_TRIANGLES, 0, 6);
+glBindVertexArray(0);
+
+//绘制长方形
+glUseProgram(shaderProgramOrange);
+glBindVertexArray(VAO2);
+glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_INT,0);
+glBindVertexArray(0);
+
+//交换缓冲
+glfwSwapBuffers(window);
+}
+// Properly de-allocate all resources once they've outlived their purpose
+glDeleteVertexArrays(1, &VAO1);
+glDeleteBuffers(1, &VBO1);
+glDeleteVertexArrays(1, &VAO2);
+glDeleteBuffers(1, &VBO2);
+
+//释放资源
+glfwTerminate();
+return 0;
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+// 当用户按下ESC键,我们设置window窗口的WindowShouldClose属性为true
+// 关闭应用程序
+if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+glfwSetWindowShouldClose(window, GL_TRUE);
+}
+void checkError(GLuint shader,GLbyte status) {
+GLint success;
+GLchar infoLog[512];
+glGetShaderiv(shader, status, &success);
+if (!success)
+{
+glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+}
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+结果：
+这里写图片描述

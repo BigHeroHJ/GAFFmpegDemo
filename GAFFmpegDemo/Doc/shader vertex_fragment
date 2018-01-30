@@ -1,0 +1,18 @@
+shader 2： vertex, fragment, surf的区别
+
+vertex shader, fragment shader, surf shader
+
+vertex shader逐个对顶点进行变换。---->得到物体的轮廓，然后对面上的像素光照进行线性插值。
+
+fragment shader, 根据检测不同，来决定是否修正每个像素的color等信息。  逐像素处理。
+
+vertex的输出是 fragment的输入。
+vertex是顶点变换， 输入和输出都需要包含顶点的position信息；
+fragment是色深的变化，输出一般只有color信息。
+vertex很快。
+此二者是显卡本身能力， OpenGL, D3D都有api
+
+surf shader是U3D提供； U3D将surf shader翻译成vertex + fragment shader； 简化了单独的vertex + fragment的编写方式。
+
+直接照明： 镜面反射（高光） 和  漫反射（Lambert 粗糙表面）
+间接照明： 作为常量， 一般通过预先烘焙得到。计算量太大。

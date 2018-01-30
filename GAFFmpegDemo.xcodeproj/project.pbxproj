@@ -37,6 +37,10 @@
 		3FA39D35201A2A05000F9EBE /* 部分参数变化解释 in Resources */ = {isa = PBXBuildFile; fileRef = 3FA39D32201A2A05000F9EBE /* 部分参数变化解释 */; };
 		3FA39D36201A2A05000F9EBE /* 时间参数解释 in Resources */ = {isa = PBXBuildFile; fileRef = 3FA39D33201A2A05000F9EBE /* 时间参数解释 */; };
 		3FA39D39201A2D9F000F9EBE /* CG_Frame_YUV.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FA39D37201A2D9F000F9EBE /* CG_Frame_YUV.m */; };
+		3FAC6954202099FF00298D89 /* GARenderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FAC6953202099FF00298D89 /* GARenderView.m */; };
+		3FAC69562020B27D00298D89 /* shader vertex_fragment in Resources */ = {isa = PBXBuildFile; fileRef = 3FAC69552020B27D00298D89 /* shader vertex_fragment */; };
+		3FAC69582020B8E000298D89 /* OpenGLES 和 shader in Resources */ = {isa = PBXBuildFile; fileRef = 3FAC69572020B8E000298D89 /* OpenGLES 和 shader */; };
+		3FAC695A2020C20600298D89 /* opengl 解释 in Resources */ = {isa = PBXBuildFile; fileRef = 3FAC69592020C20600298D89 /* opengl 解释 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -195,6 +199,11 @@
 		3FA39D33201A2A05000F9EBE /* 时间参数解释 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "时间参数解释"; sourceTree = "<group>"; };
 		3FA39D37201A2D9F000F9EBE /* CG_Frame_YUV.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CG_Frame_YUV.m; sourceTree = "<group>"; };
 		3FA39D38201A2D9F000F9EBE /* CG_Frame_YUV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CG_Frame_YUV.h; sourceTree = "<group>"; };
+		3FAC6952202099FF00298D89 /* GARenderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GARenderView.h; sourceTree = "<group>"; };
+		3FAC6953202099FF00298D89 /* GARenderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GARenderView.m; sourceTree = "<group>"; };
+		3FAC69552020B27D00298D89 /* shader vertex_fragment */ = {isa = PBXFileReference; lastKnownFileType = text; path = "shader vertex_fragment"; sourceTree = "<group>"; };
+		3FAC69572020B8E000298D89 /* OpenGLES 和 shader */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OpenGLES 和 shader"; sourceTree = "<group>"; };
+		3FAC69592020C20600298D89 /* opengl 解释 */ = {isa = PBXFileReference; lastKnownFileType = text; path = "opengl 解释"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -278,6 +287,8 @@
 				3FA39C77201A2757000F9EBE /* LaunchScreen.storyboard */,
 				3FA39C7A201A2757000F9EBE /* Info.plist */,
 				3FA39C7B201A2757000F9EBE /* main.m */,
+				3FAC6952202099FF00298D89 /* GARenderView.h */,
+				3FAC6953202099FF00298D89 /* GARenderView.m */,
 			);
 			path = GAFFmpegDemo;
 			sourceTree = "<group>";
@@ -505,6 +516,9 @@
 				3FA39D33201A2A05000F9EBE /* 时间参数解释 */,
 				3FA39D31201A2A04000F9EBE /* AVPacket&AVFrame解释 */,
 				3F7100D5201B762100B8F535 /* 疑惑点 */,
+				3FAC69552020B27D00298D89 /* shader vertex_fragment */,
+				3FAC69572020B8E000298D89 /* OpenGLES 和 shader */,
+				3FAC69592020C20600298D89 /* opengl 解释 */,
 			);
 			path = Doc;
 			sourceTree = "<group>";
@@ -618,10 +632,13 @@
 			files = (
 				3FA39C79201A2757000F9EBE /* LaunchScreen.storyboard in Resources */,
 				3FA39C76201A2757000F9EBE /* Assets.xcassets in Resources */,
+				3FAC69582020B8E000298D89 /* OpenGLES 和 shader in Resources */,
 				3FA39D35201A2A05000F9EBE /* 部分参数变化解释 in Resources */,
 				3FA39D36201A2A05000F9EBE /* 时间参数解释 in Resources */,
+				3FAC695A2020C20600298D89 /* opengl 解释 in Resources */,
 				3FA39D34201A2A05000F9EBE /* AVPacket&AVFrame解释 in Resources */,
 				3F7100D6201B762100B8F535 /* 疑惑点 in Resources */,
+				3FAC69562020B27D00298D89 /* shader vertex_fragment in Resources */,
 				3FA39C74201A2757000F9EBE /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -650,6 +667,7 @@
 				3FA39C71201A2757000F9EBE /* ViewController.m in Sources */,
 				3FA39C7C201A2757000F9EBE /* main.m in Sources */,
 				3FA39D39201A2D9F000F9EBE /* CG_Frame_YUV.m in Sources */,
+				3FAC6954202099FF00298D89 /* GARenderView.m in Sources */,
 				3FA39D2A201A28AF000F9EBE /* GACodec.m in Sources */,
 				3FA39C6E201A2757000F9EBE /* AppDelegate.m in Sources */,
 				3FA39D2F201A2960000F9EBE /* CodeDecoder.m in Sources */,
