@@ -4,6 +4,7 @@
 //
 //  Created by XDS on 2018/1/30.
 //  Copyright © 2018年 MountainX. All rights reserved.
+//https://learnopengl-cn.github.io/01%20Getting%20started/04%20Hello%20Triangle/ ---翻译OpenGL
 //http://blog.csdn.net/u013467442/article/details/44498125 ---opengl 一些入门的blog
 // http://blog.csdn.net/kesalin/article/details/8221393 ----基本使用参数
 //https://www.cnblogs.com/elvisyzhao/p/3398250.html
@@ -16,6 +17,51 @@
 #import "GARenderView.h"
 #include <OpenGLES/ES2/gl.h>
 
+#define shader 部分
+
+#define STRINGIZE(x) #x
+#define STRINGIZE2(x) STRINGIZE(x)
+#define SHADER_STRING(text) @ STRINGIZE2(text)
+
+//顶点着色器 代码 一个shader 小程序
+NSString *const vertexShaderString = SHADER_STRING
+(
+ attribute vec4 position;
+ attribute vec2 texcoord;
+ uniform mat4 modelViewProjectionMatrix;
+ varying vec2 v_texcoord;
+ 
+ void main()
+ {
+     gl_Position = modelViewProjectionMatrix * position;
+     v_texcoord = texcoord.xy;
+ }
+ );
+
+// 片段着色器代码 一个shader 小程序
+NSString *const yuvFragmentShaderString = SHADER_STRING
+(
+ varying highp vec2 v_texcoord;
+ uniform sampler2D s_texture_y;
+ uniform sampler2D s_texture_u;
+ uniform sampler2D s_texture_v;
+ 
+ void main()
+ {
+     highp float y = texture2D(s_texture_y, v_texcoord).r;
+     highp float u = texture2D(s_texture_u, v_texcoord).r - 0.5;
+     highp float v = texture2D(s_texture_v, v_texcoord).r - 0.5;
+     
+     highp float r = y +             1.402 * v;
+     highp float g = y - 0.344 * u - 0.714 * v;
+     highp float b = y + 1.772 * u;
+     
+     gl_FragColor = vec4(r,g,b,1.0);//设置的 fragcolor 就是输出的color
+ }
+ );
+
+
+
 //加载编译 shader
 GLint  LoadShader(GLenum shadetype ,const char *shaderSrc)
 {
@@ -26,7 +72,7 @@ GLint  LoadShader(GLenum shadetype ,const char *shaderSrc)
         return 0;
     }
    const  GLchar * shader_src = (GLchar *)shaderSrc;
-    glShaderSource(shader, 1, &shader_src, NULL);
+    glShaderSource(shader, 1, shader_src, NULL);
     glCompileShader(shader);
 #ifdef DEBUG
     
@@ -60,6 +106,9 @@ GLint  LoadShader(GLenum shadetype ,const char *shaderSrc)
     //绘制缓冲区的 宽度 高度
     GLint         _getRenderWidth;
     GLint         _getRenderHeight;
+    
+    
+    GLuint        _program;
     
 }
 
@@ -115,10 +164,51 @@ GLint  LoadShader(GLenum shadetype ,const char *shaderSrc)
     return self;
 }
 
-- (void)addShader
+
+
+- (BOOL)addShader
 {
-    GLuint   vertexShader,fragmentShader;
-    vertexShader = LoadShader(GL_VERTEX_SHADER, <#const char *shaderSrc#>)
+    
+    _program = glCreateProgram();//创建一个程序
+    GLuint   vertexShader,fragmentShader;//顶点着色器（存储顶点数据） 和 片段着色器 （输出color）
+    vertexShader = LoadShader(GL_VERTEX_SHADER, [vertexShaderString UTF8String]);
+    fragmentShader = LoadShader(GL_FRAGMENT_SHADER, [yuvFragmentShaderString UTF8String]);
+    if(!vertexShader ||!fragmentShader)
+    {
+        printf("vertex & fragment is failed");
+        return NO;
+    }
+    
+    //连接shader 到program
+    glAttachShader(_program, vertexShader);
+    glAttachShader(_program, fragmentShader);
+    
+    //连接程序
+    glLinkProgram(_program);
+    
+    //获取程序program status
+    GLint  status;
+    glGetProgramiv(_program, GL_LINK_STATUS, &status);
+    if(status == GL_FALSE){
+        printf("program is failed");
+        return NO;
+    }
+    
+    //下面都是获取program 信息 是否可用啥的
+      glValidateProgram(_program);
+#ifdef DEBUG
+    GLint logLength;
+    glGetProgramiv(_program, GL_INFO_LOG_LENGTH, &logLength);
+    if(logLength > 0){
+        return NO;
+    }
+#endif
+    glGetProgramiv(_program, GL_VALIDATE_STATUS, &status);
+    if (status == GL_FALSE) {
+        return NO;
+    }
+    
+    return YES;
 }
 /*
 // Only override drawRect: if you perform custom drawing.
