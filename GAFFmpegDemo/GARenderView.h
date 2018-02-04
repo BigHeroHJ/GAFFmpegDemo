@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+@class CG_Frame_YUV;
 
 @interface GARenderView : UIView
-
+- (void)renderFrame:(CG_Frame_YUV *) frame;
 @end

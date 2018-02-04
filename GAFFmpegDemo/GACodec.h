@@ -30,4 +30,5 @@
 
 - (UIImage *)getNextFrame;
 - (UIImage *)imageFromAVPicture;
+- (void)nextDisplayFrame;
 @end

@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F2CDCB420271CC5006C7320 /* video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 3F2CDCB320271CC5006C7320 /* video.mp4 */; };
 		3F7100D6201B762100B8F535 /* 疑惑点 in Resources */ = {isa = PBXBuildFile; fileRef = 3F7100D5201B762100B8F535 /* 疑惑点 */; };
+		3F8608F82026C3DA00627A3F /* glUniform方法 in Resources */ = {isa = PBXBuildFile; fileRef = 3F8608F72026C3DA00627A3F /* glUniform方法 */; };
 		3FA39C6E201A2757000F9EBE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FA39C6D201A2757000F9EBE /* AppDelegate.m */; };
 		3FA39C71201A2757000F9EBE /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FA39C70201A2757000F9EBE /* ViewController.m */; };
 		3FA39C74201A2757000F9EBE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3FA39C72201A2757000F9EBE /* Main.storyboard */; };
@@ -61,7 +63,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3F2CDCB320271CC5006C7320 /* video.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = video.mp4; sourceTree = "<group>"; };
 		3F7100D5201B762100B8F535 /* 疑惑点 */ = {isa = PBXFileReference; lastKnownFileType = text; path = "疑惑点"; sourceTree = "<group>"; };
+		3F8608F72026C3DA00627A3F /* glUniform方法 */ = {isa = PBXFileReference; lastKnownFileType = text; path = "glUniform方法"; sourceTree = "<group>"; };
+		3F8608F92026D1B600627A3F /* glPixelStorei 字节对齐 */ = {isa = PBXFileReference; lastKnownFileType = text; path = "glPixelStorei 字节对齐"; sourceTree = "<group>"; };
 		3FA39C69201A2757000F9EBE /* GAFFmpegDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GAFFmpegDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FA39C6C201A2757000F9EBE /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3FA39C6D201A2757000F9EBE /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -246,6 +251,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3F2CDCB220271CC5006C7320 /* source */ = {
+			isa = PBXGroup;
+			children = (
+				3F2CDCB320271CC5006C7320 /* video.mp4 */,
+			);
+			path = source;
+			sourceTree = "<group>";
+		};
 		3FA39C60201A2757000F9EBE = {
 			isa = PBXGroup;
 			children = (
@@ -270,6 +283,7 @@
 		3FA39C6B201A2757000F9EBE /* GAFFmpegDemo */ = {
 			isa = PBXGroup;
 			children = (
+				3F2CDCB220271CC5006C7320 /* source */,
 				3FA39D30201A29E0000F9EBE /* Doc */,
 				3FA39C9E201A2792000F9EBE /* FFmpeg-iOS */,
 				3FA39C6C201A2757000F9EBE /* AppDelegate.h */,
@@ -519,6 +533,8 @@
 				3FAC69552020B27D00298D89 /* shader vertex_fragment */,
 				3FAC69572020B8E000298D89 /* OpenGLES 和 shader */,
 				3FAC69592020C20600298D89 /* opengl 解释 */,
+				3F8608F72026C3DA00627A3F /* glUniform方法 */,
+				3F8608F92026D1B600627A3F /* glPixelStorei 字节对齐 */,
 			);
 			path = Doc;
 			sourceTree = "<group>";
@@ -637,6 +653,8 @@
 				3FA39D36201A2A05000F9EBE /* 时间参数解释 in Resources */,
 				3FAC695A2020C20600298D89 /* opengl 解释 in Resources */,
 				3FA39D34201A2A05000F9EBE /* AVPacket&AVFrame解释 in Resources */,
+				3F2CDCB420271CC5006C7320 /* video.mp4 in Resources */,
+				3F8608F82026C3DA00627A3F /* glUniform方法 in Resources */,
 				3F7100D6201B762100B8F535 /* 疑惑点 in Resources */,
 				3FAC69562020B27D00298D89 /* shader vertex_fragment in Resources */,
 				3FA39C74201A2757000F9EBE /* Main.storyboard in Resources */,

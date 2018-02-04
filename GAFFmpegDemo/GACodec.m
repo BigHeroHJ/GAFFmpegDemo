@@ -33,6 +33,7 @@
 @end
 
 @implementation GACodec
+
 - (id)initWithVideo:(NSString *)path
 {
     
@@ -153,8 +154,19 @@
 //    return image;
 //
 //}
+
+- (void)nextDisplayFrame
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        CG_Frame_YUV * yuvFrame = [self displayFrame];
+        if([self.delegate respondsToSelector:@selector(updateDisplayFrame:)]){
+            [self.delegate updateDisplayFrame:yuvFrame];
+        }
+    });
+}
 -(UIImage *)currentImage {
     if (!avFrame->data[0]) return nil;
+   
     return [self imageFromAVPicture];
 }
 - (UIImage *)imageFromAVPicture
@@ -186,12 +198,7 @@
               picture.linesize);
     sws_freeContext(imgConvertCtx);
    
-    dispatch_async(dispatch_get_main_queue(), ^{
-       CG_Frame_YUV * yuvFrame = [self displayFrame];
-        if([self.delegate respondsToSelector:@selector(updateDisplayFrame:)]){
-            [self.delegate updateDisplayFrame:yuvFrame];
-        }
-    });
+  
     //[UIImage imageWithCGImage:[self CGImageRefFromAVPicture:picture width:_outputWidth height:_outputHeight]]
     
 //    CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
