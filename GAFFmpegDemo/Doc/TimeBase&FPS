@@ -1,0 +1,38 @@
+http://blog.csdn.net/zhuweigangzwg/article/details/64919706
+
+ffmpeg存在多个时间基准(time_base)，对应不同的阶段(结构体)，每个time_base具体的值不一样，ffmpeg提供函数在各个time_base中进行切换。
+AVStream
+
+typedef struct AVStream {
+/**
+* This is the fundamental unit of time (in seconds) in terms
+* of which frame timestamps are represented.
+*
+* decoding: set by libavformat
+* encoding: May be set by the caller before avformat_write_header() to
+*           provide a hint to the muxer about the desired timebase. In
+*           avformat_write_header(), the muxer will overwrite this field
+*           with the timebase that will actually be used for the timestamps
+*           written into the file (which may or may not be related to the
+*           user-provided one, depending on the format).
+*/
+AVRational time_base;
+
+}
+AVStream->time_base是1S对应的时间单位，在 avformat_write_header()前可以设置AVStream->time_base，根据封装格式不一样，avformat_write_header()可能修改AVStream->time_base，比如mpegts修改为90000，flv修改为1000，mp4根据设置time_base，如果小于10000，会将time_base*2的幂直到大于10000。
+AVCodecContext
+
+typedef struct AVCodecContext {
+/**
+* This is the fundamental unit of time (in seconds) in terms
+* of which frame timestamps are represented. For fixed-fps content,
+* timebase should be 1/framerate and timestamp increments should be
+* identically 1.
+* - encoding: MUST be set by user.
+* - decoding: Set by libavcodec.
+*/
+AVRational time_base;
+
+}
+
+AVCodecContext  ->time_base是1S对应的时间单位，一般以帧率为作为timebase。

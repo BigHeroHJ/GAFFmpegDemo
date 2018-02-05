@@ -25,7 +25,6 @@
 
 - (id)initWithVideo:(NSString *)path;
 
-
 - (BOOL)nextFrame;
 
 - (UIImage *)getNextFrame;

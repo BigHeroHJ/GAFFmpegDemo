@@ -1,0 +1,8 @@
+
+typedef struct AVRational{
+int num; ///< numerator
+int den; ///< denominator
+} AVRational;
+
+AVRational这个结构标识一个分数，num为分数，den为分母。
+表示一个时间刻度

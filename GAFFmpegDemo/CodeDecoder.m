@@ -390,10 +390,13 @@ static void avStreamFPSTimeBase(AVStream *st, CGFloat defaultTimeBase, CGFloat *
     CGFloat fps, timebase;
     
     if (st->time_base.den && st->time_base.num)
+    {
         timebase = av_q2d(st->time_base);
-    else if(st->codec->time_base.den && st->codec->time_base.num)
+        
+    }else if(st->codec->time_base.den && st->codec->time_base.num)
+    {
         timebase = av_q2d(st->codec->time_base);
-    else
+    }else
         timebase = defaultTimeBase;
     
     if (st->codec->ticks_per_frame != 1) {
@@ -401,11 +404,16 @@ static void avStreamFPSTimeBase(AVStream *st, CGFloat defaultTimeBase, CGFloat *
     }
     
     if (st->avg_frame_rate.den && st->avg_frame_rate.num)
+    {
         fps = av_q2d(st->avg_frame_rate);
-    else if (st->r_frame_rate.den && st->r_frame_rate.num)
+    }else if (st->r_frame_rate.den && st->r_frame_rate.num)
+    {
         fps = av_q2d(st->r_frame_rate);
-    else
-        fps = 1.0 / timebase;
+    }
+    else{
+         fps = 1.0 / timebase;
+    }
+    
     
     if (pFPS)
         *pFPS = fps;

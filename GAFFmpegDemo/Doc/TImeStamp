@@ -1,0 +1,55 @@
+http://blog.csdn.net/fantian0705/article/details/76853498
+
+Timestamp有PTS和DTS，一般在有B帧编码的情况下两者都会用到，没有B帧时，两者一般保持一样。
+
+PTS(Presentation timestamp)即显示时间戳，就是一副图片或音频帧显示或播放的时间。
+
+DTS(Decompressiontimestamp)即解码时间戳，就是一副图片或音频帧解码的时间。
+
+AVPacket
+
+typedef struct AVPacket {
+/**
+* Presentation timestamp in AVStream->time_base units; the time at which
+* the decompressed packet will be presented to the user.
+* Can be AV_NOPTS_VALUE if it is not stored in the file.
+* pts MUST be larger or equal to dts as presentation cannot happen before
+* decompression, unless one wants to view hex dumps. Some formats misuse
+* the terms dts and pts/cts to mean something different. Such timestamps
+* must be converted to true pts/dts before they are stored in AVPacket.
+*/
+int64_t pts;
+/**
+* Decompression timestamp in AVStream->time_base units; the time at which
+* the packet is decompressed.
+* Can be AV_NOPTS_VALUE if it is not stored in the file.
+*/
+int64_t dts;
+
+}一帧原始数据压缩后的数据用AVPacket表示，pts指示帧显示时间，dts指示帧解码时间
+
+
+AVFrame
+
+typedef struct AVFrame {
+/**
+* Presentation timestamp in time_base units (time when frame should be shown to user).
+*/
+int64_t pts;
+
+/**
+* PTS copied from the AVPacket that was decoded to produce this frame.
+*/
+int64_t pkt_pts;
+
+/**
+* DTS copied from the AVPacket that triggered returning this frame. (if frame threading isn't used)
+* This is also the Presentation time of this AVFrame calculated from
+* only AVPacket.dts values without pts values.
+*/
+int64_t pkt_dts;
+
+}
+
+根据上面的解释，pts为frame的时间戳，在解码时pkt_pts和pkt_dts是复制的AVPacket中对应的pkt_pts和pkt_dts。需要说明的是pts在解码时是没有赋值的，需要调用pts  =av_frame_get_best_effort_timestamp(p_frame)获取，这个函数是一个宏定义，实际上是读取的AVframe->best_effort_timestamp。编码时需要带上pts。
+

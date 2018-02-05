@@ -312,7 +312,7 @@ GLint  LoadShader(GLenum shadetype ,NSString *shaderString)
     [EAGLContext setCurrentContext:_EAContxt];
    // glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
     
-    glViewport(0, 0, _getRenderWidth, _getRenderHeight);//窗口大小
+    glViewport(-0, 0, _getRenderWidth, 480);//窗口大小
 //    glClearColor(0.25, 0.5, 0.5, 1);//清除背景色 黑色
 //    glClear(GL_COLOR_BUFFER_BIT);
     
