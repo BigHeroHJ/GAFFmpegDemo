@@ -14,6 +14,8 @@
 		3F724D4920289D23001B90AB /* AVStream in Resources */ = {isa = PBXBuildFile; fileRef = 3F724D4820289D23001B90AB /* AVStream */; };
 		3F724D4B2028A2CD001B90AB /* TimeBase&FPS in Resources */ = {isa = PBXBuildFile; fileRef = 3F724D4A2028A2CD001B90AB /* TimeBase&FPS */; };
 		3F724D4D2028A3A0001B90AB /* TImeStamp in Resources */ = {isa = PBXBuildFile; fileRef = 3F724D4C2028A3A0001B90AB /* TImeStamp */; };
+		3F8033D92029CF8100EE54F4 /* GAMedioPlayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F8033D82029CF8100EE54F4 /* GAMedioPlayController.m */; };
+		3F8033DB2029DF4900EE54F4 /* 音视频同步DTS & PTS in Resources */ = {isa = PBXBuildFile; fileRef = 3F8033DA2029DF4900EE54F4 /* 音视频同步DTS & PTS */; };
 		3F8608F82026C3DA00627A3F /* glUniform方法 in Resources */ = {isa = PBXBuildFile; fileRef = 3F8608F72026C3DA00627A3F /* glUniform方法 */; };
 		3FA39C6E201A2757000F9EBE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FA39C6D201A2757000F9EBE /* AppDelegate.m */; };
 		3FA39C71201A2757000F9EBE /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FA39C70201A2757000F9EBE /* ViewController.m */; };
@@ -76,6 +78,9 @@
 		3F724D4820289D23001B90AB /* AVStream */ = {isa = PBXFileReference; lastKnownFileType = text; path = AVStream; sourceTree = "<group>"; };
 		3F724D4A2028A2CD001B90AB /* TimeBase&FPS */ = {isa = PBXFileReference; lastKnownFileType = text; path = "TimeBase&FPS"; sourceTree = "<group>"; };
 		3F724D4C2028A3A0001B90AB /* TImeStamp */ = {isa = PBXFileReference; lastKnownFileType = text; path = TImeStamp; sourceTree = "<group>"; };
+		3F8033D72029CF8100EE54F4 /* GAMedioPlayController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAMedioPlayController.h; sourceTree = "<group>"; };
+		3F8033D82029CF8100EE54F4 /* GAMedioPlayController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GAMedioPlayController.m; sourceTree = "<group>"; };
+		3F8033DA2029DF4900EE54F4 /* 音视频同步DTS & PTS */ = {isa = PBXFileReference; lastKnownFileType = text; path = "音视频同步DTS & PTS"; sourceTree = "<group>"; };
 		3F8608F72026C3DA00627A3F /* glUniform方法 */ = {isa = PBXFileReference; lastKnownFileType = text; path = "glUniform方法"; sourceTree = "<group>"; };
 		3F8608F92026D1B600627A3F /* glPixelStorei 字节对齐 */ = {isa = PBXFileReference; lastKnownFileType = text; path = "glPixelStorei 字节对齐"; sourceTree = "<group>"; };
 		3FA39C69201A2757000F9EBE /* GAFFmpegDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GAFFmpegDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -301,6 +306,8 @@
 				3FA39C6D201A2757000F9EBE /* AppDelegate.m */,
 				3FA39C6F201A2757000F9EBE /* ViewController.h */,
 				3FA39C70201A2757000F9EBE /* ViewController.m */,
+				3F8033D72029CF8100EE54F4 /* GAMedioPlayController.h */,
+				3F8033D82029CF8100EE54F4 /* GAMedioPlayController.m */,
 				3FAC6952202099FF00298D89 /* GARenderView.h */,
 				3FAC6953202099FF00298D89 /* GARenderView.m */,
 				3F724D4320288B18001B90AB /* GAMediaCodec.h */,
@@ -552,6 +559,7 @@
 				3F724D4820289D23001B90AB /* AVStream */,
 				3F724D4A2028A2CD001B90AB /* TimeBase&FPS */,
 				3F724D4C2028A3A0001B90AB /* TImeStamp */,
+				3F8033DA2029DF4900EE54F4 /* 音视频同步DTS & PTS */,
 			);
 			path = Doc;
 			sourceTree = "<group>";
@@ -665,6 +673,7 @@
 			files = (
 				3FA39C79201A2757000F9EBE /* LaunchScreen.storyboard in Resources */,
 				3FA39C76201A2757000F9EBE /* Assets.xcassets in Resources */,
+				3F8033DB2029DF4900EE54F4 /* 音视频同步DTS & PTS in Resources */,
 				3F724D47202896A6001B90AB /* AVRational in Resources */,
 				3FAC69582020B8E000298D89 /* OpenGLES 和 shader in Resources */,
 				3FA39D35201A2A05000F9EBE /* 部分参数变化解释 in Resources */,
@@ -705,6 +714,7 @@
 			files = (
 				3FA39C71201A2757000F9EBE /* ViewController.m in Sources */,
 				3FA39C7C201A2757000F9EBE /* main.m in Sources */,
+				3F8033D92029CF8100EE54F4 /* GAMedioPlayController.m in Sources */,
 				3FA39D39201A2D9F000F9EBE /* CG_Frame_YUV.m in Sources */,
 				3FAC6954202099FF00298D89 /* GARenderView.m in Sources */,
 				3FA39D2A201A28AF000F9EBE /* GACodec.m in Sources */,

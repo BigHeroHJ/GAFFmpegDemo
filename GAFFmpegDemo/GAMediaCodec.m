@@ -11,6 +11,8 @@
 #include <libavformat/avformat.h>
 #include <libavutil/frame.h>
 #include <libavutil/avutil.h>
+#import "CG_Frame_YUV.h"
+
 
 
 typedef enum : NSUInteger {
@@ -77,9 +79,12 @@ typedef enum : NSUInteger {
     //接下来去找 对应的streams 的codec
     for (NSNumber *num in _videoStreamIndexs) {
         int index = [num intValue];
-        if ((_formatCtx->streams[index]->disposition & AV_DISPOSITION_DEFAULT) == 0) {
+        if (0 == (_formatCtx->streams[index]->disposition & AV_DISPOSITION_ATTACHED_PIC)) {
             [self openStream:index];
         }
+//        if ((_formatCtx->streams[index]->disposition & AV_DISPOSITION_DEFAULT) == 0) {
+//            [self openStream:index];
+//        }
     }
     
     return  YES;
@@ -109,6 +114,8 @@ typedef enum : NSUInteger {
     //从formateCtx 中找到 codecContext
    AVCodecContext * codecCtx = _formatCtx->streams[streamIndex]->codec;
     
+    _outputWidth = codecCtx->width;
+    _outputHeight = codecCtx->height;
     //找到对应 codec
     AVCodec *codec = avcodec_find_decoder(codecCtx->codec_id);
     if(codec == NULL){
@@ -163,4 +170,72 @@ void findTimeBaseFps(float *fps ,float * timeBase,AVStream * stream)
     *fps = FPS;
 }
 
+//读取frame 中的数据
+- (NSArray *)decodeFrame:(double)minDuration
+{
+    AVPacket  * packet;
+    NSMutableArray * frames = [NSMutableArray array];
+    CGFloat allDuration = 0;
+    int  gotPic = 0;
+    while (av_read_frame(_formatCtx, packet) >= 0) {
+        avcodec_decode_video2(_codecCtx, _avFrame, &gotPic, packet);
+        if(gotPic > 0){
+            //处理 avframe 为yuvFrame 对象数据 回传
+           CG_Frame_YUV * yuvObj =  [self handleFrame];
+            if(yuvObj){
+                [frames addObject:yuvObj];
+                allDuration += yuvObj.duration;
+                if(allDuration >= minDuration){
+                    return frames;
+                }
+            }
+        }
+        av_packet_free(&packet);
+    }
+    return  frames;
+}
+
+//将avframe 转化为yuv 对象
+- (CG_Frame_YUV *)handleFrame
+{
+    //从avFrame中获取 大小
+    CG_Frame_YUV * yuvObj = [[CG_Frame_YUV alloc] init];
+    yuvObj.luma = copyDataFromAVFrame(_codecCtx->width,_codecCtx->height,_avFrame->data[0], _avFrame->linesize[0]);
+    yuvObj.chromaB = copyDataFromAVFrame(_codecCtx->width / 2, _codecCtx->height / 2, _avFrame->data[1], _avFrame->linesize[1]);
+    yuvObj.chromaR = copyDataFromAVFrame(_codecCtx->width / 2, _codecCtx->height / 2, _avFrame->data[2], _avFrame->linesize[2]);
+    yuvObj.width = _avFrame->width;
+    yuvObj.height = _avFrame->height;
+    
+    //这个frame 的位置
+    yuvObj.position = av_frame_get_best_effort_timestamp(_avFrame);//以流中的时间为基础 估计的时间戳
+    //这个frame 时长
+    yuvObj.duration = 0;
+    const int64_t frameDuration = av_frame_get_pkt_duration(_avFrame);
+    if(frameDuration){
+        yuvObj.duration = frameDuration * _timeBase;
+        yuvObj.duration += _avFrame->repeat_pict / (2 * _fps);//extra_delay = repeat_pict / (2*fps)你这张图片需要要延迟多少久
+//        extra_delay = repeat_pict / (2*fps)
+//        fps=1/time_base
+//        那么
+//        extra_delay= repeat_pict*time_base*0.5
+    }else{
+        yuvObj.duration = 1.0f / _fps;//如果不对的话 就使用  每秒帧率 计算平均一帧时间
+    }
+    
+    return yuvObj;
+}
+
+static NSData * copyDataFromAVFrame(int width, int height,unsigned char *dataChar ,int linese)
+{
+    width = MIN(width, linese);
+    NSMutableData * data = [NSMutableData dataWithLength:width * height];
+    Byte  *bytes = data.mutableBytes;
+    for(int i = 0;i < height;i++)
+    {
+        memcpy(bytes, dataChar, width);
+        bytes += width;
+        dataChar += linese;
+    }
+    return  data;
+}
 @end

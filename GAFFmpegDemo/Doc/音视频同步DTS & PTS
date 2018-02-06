@@ -1,0 +1,106 @@
+三种帧：I  P  B
+
+I帧表示关键帧，你可以理解为这一帧画面的完整保留；解码时只需要本帧数据就可以完成（因为包含完整画面）
+
+
+
+P帧表示的是这一帧跟之前的一个关键帧（或P帧）的差别，解码时需要用之前缓存的画面叠加上本帧定义的差别，生成最终画面。（也就是差别帧，P帧没有完整画面数据，只有与前一帧的画面差别的数据）
+
+
+B帧是双向差别帧，也就是B帧记录的是本帧与前后帧的差别（具体比较复杂，有4种情况），换言之，要解码B帧，不仅要取得之前的缓存画面，还要解码之后的画面，通过前后画面的与本帧数据的叠加取得最终的画面。B帧压缩率高，但是解码时CPU会比较累。
+
+因为B帧记录的是前后帧的差别，比P帧能节约更多的空间，但这样一来，文件小了，解码器就麻烦了，因为在解码时，不仅要用之前缓存的画面，还要知道下一个I或者P的画面（也就是说要预读预解码），而且，B帧不能简单地丢掉，因为B帧其实也包含了画面信息，如果简单丢掉，并用之前的画面简单重复，就会造成画面卡（其实就是丢帧了），并且由于网络上的电影为了节约空间，往往使用相当多的B帧，B帧用的多，对不支持B帧的播放器就造成更大的困扰，画面也就越卡
+
+在视音频流中的包中都含有DTS和PTS，就是这样的量（准确来说是PTS）。DTS，Decoding Time Stamp，解码时间戳，告诉解码器packet的解码顺序；PTS，Presentation Time Stamp，显示时间戳，指示从packet中解码出来的数据的显示顺序。
+
+假如一个视频序列，要这样显示I B B P，但是需要在B帧之前得到P帧的信息，因此帧可能以这样的顺序来存储I P B B，这样其解码顺序和显示的顺序就不同了，这也是DTS和PTS同时存在的原因。DTS指示解码顺序，PTS指示显示顺序。所以流中可以是这样的：
+Stream : I P B B
+DTS      1 2 3 4
+PTS      1 4 2 3
+
+PTS为一个uint64_t的整型，其单位就是time_base。
+    表示视频长度的duration也是一个uint64_t，那么使用如下方法就可以计算出一个视频流的时间长度：
+    time(second) = stream->duration * av_q2d(st->time_base)
+
+某帧的时间
+   frame->duration * av_q2d(st->time_base)
+
+*****************************88
+获取Audio Clock
+Audio Clock，也就是Audio的播放时长，可以在Audio时更新Audio Clock。在函数audio_decode_frame中解码新的packet，这是可以设置Auddio clock为该packet的PTS
+
+if (pkt.pts != AV_NOPTS_VALUE)
+{
+audio_state->audio_clock = av_q2d(audio_state->stream->time_base) * pkt.pts;
+}
+由于一个packet中可以包含多个帧，packet中的PTS比真正的播放的PTS可能会早很多，可以根据Sample Rate 和 Sample Format来计算出该packet中的数据可以播放的时长，再次更新Audio clock 。
+
+// 每秒钟音频播放的字节数 sample_rate * channels * sample_format(一个sample占用的字节数)
+audio_state->audio_clock += static_cast<double>(data_size) / (2 * audio_state->stream->codec->channels *
+audio_state->stream->codec->sample_rate);
+上面乘以2是因为sample format是16位的无符号整型，占用2个字节。
+有了Audio clock后，在外面获取该值的时候却不能直接返回该值，因为audio缓冲区的可能还有未播放的数据，需要减去这部分的时间
+
+double AudioState::get_audio_clock()
+{
+int hw_buf_size = audio_buff_size - audio_buff_index;
+int bytes_per_sec = stream->codec->sample_rate * audio_ctx->channels * 2;
+
+double pts = audio_clock - static_cast<double>(hw_buf_size) / bytes_per_sec;
+
+
+return pts;
+}
+用audio缓冲区中剩余的数据除以每秒播放的音频数据得到剩余数据的播放时间，从Audio clock中减去这部分的值就是当前的audio的播放时长。
+
+
+
+****************************
+同步
+现在有了video中Frame的显示时间，并且得到了作为基准时间的音频播放时长Audio clock ，可以将视频同步到音频了。
+
+用当前帧的PTS - 上一播放帧的PTS得到一个延迟时间
+用当前帧的PTS和Audio Clock进行比较，来判断视频的播放速度是快了还是慢了
+根据上一步额判断结果，设置播放下一帧的延迟时间。
+使用要播放的当前帧的PTS和上一帧的PTS差来估计播放下一帧的延迟时间，并根据video的播放速度来调整这个延迟时间，以实现视音频的同步播放。
+具体实现：
+
+// 将视频同步到音频上，计算下一帧的延迟时间
+// 使用要播放的当前帧的PTS和上一帧的PTS差来估计播放下一帧的延迟时间，并根据video的播放速度来调整这个延迟时间
+double current_pts = *(double*)video->frame->opaque;
+double delay = current_pts - video->frame_last_pts;
+if (delay <= 0 || delay >= 1.0)
+delay = video->frame_last_delay;
+
+video->frame_last_delay = delay;
+video->frame_last_pts = current_pts;
+
+// 根据Audio clock来判断Video播放的快慢
+double ref_clock = media->audio->get_audio_clock();
+
+double diff = current_pts - ref_clock;// diff < 0 => video slow,diff > 0 => video quick
+
+double threshold = (delay > SYNC_THRESHOLD) ? delay : SYNC_THRESHOLD;
+
+// 调整播放下一帧的延迟时间，以实现同步
+if (fabs(diff) < NOSYNC_THRESHOLD) // 不同步
+{
+if (diff <= -threshold) // 慢了，delay设为0
+delay = 0;
+else if (diff >= threshold) // 快了，加倍delay
+delay *= 2;
+}
+video->frame_timer += delay;
+double actual_delay = video->frame_timer - static_cast<double>(av_gettime()) / 1000000.0;
+if (actual_delay <= 0.010)
+actual_delay = 0.010;
+
+// 设置一下帧播放的延迟
+schedule_refresh(media, static_cast<int>(actual_delay * 1000 + 0.5));
+frame_last_pts和frame_last_delay是上一帧的PTS以及设置的播放上一帧时的延迟时间。
+
+首先根据当前播放帧的PTS和上一播放帧的PTS估算出一个延迟时间。
+用当前帧的PTS和Audio clock相比较判断此时视频播放的速度是快还是慢了
+视频播放过快则加倍延迟，过慢则将延迟设置为0
+frame_timer保存着视频播放的延迟时间总和，这个值和当前时间点的差值就是播放下一帧的真正的延迟时间
+schedule_refresh 设置播放下一帧的延迟时间。

@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "GAMedioPlayController.h"
 
 @interface AppDelegate ()
 
@@ -16,7 +17,11 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    
+    GAMedioPlayController * vc = [[GAMedioPlayController alloc] init];
+    [self.window setRootViewController:vc];
+    [self.window makeKeyAndVisible];
+    
     return YES;
 }
 
